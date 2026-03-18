@@ -1,0 +1,33 @@
+import express from 'express';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { testRedirect } from './redirectProxy.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(express.json());
+
+// API endpoint
+app.post('/api/test-redirect', async (req, res) => {
+  const { url } = req.body;
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: 'Missing url parameter' });
+  }
+
+  const result = await testRedirect(url);
+  res.json(result);
+});
+
+// Serve static files from Vite build
+app.use(express.static(join(__dirname, '..', 'dist')));
+
+// SPA fallback
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, '..', 'dist', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
