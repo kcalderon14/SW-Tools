@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useRedirectTester } from '../hooks/useRedirectTester';
 import TestResultsTable from '../components/TestResultsTable';
+import { stagingServers } from '../config/data';
 
 export default function RedirectTestingPage() {
   const [fromText, setFromText] = useState('');
   const [toText, setToText] = useState('');
+  const [stagingIp, setStagingIp] = useState('');
   const { results, progress, isTesting, startTest, cancelTest, clearResults } = useRedirectTester();
 
   const textareaClass =
@@ -18,12 +20,13 @@ export default function RedirectTestingPage() {
   const mismatch = fromLines.length > 0 && toLines.length > 0 && fromLines.length !== toLines.length;
 
   const handleTest = () => {
-    startTest(fromLines, toLines);
+    startTest(fromLines, toLines, stagingIp || null);
   };
 
   const handleClear = () => {
     setFromText('');
     setToText('');
+    setStagingIp('');
     clearResults();
   };
 
@@ -65,6 +68,32 @@ export default function RedirectTestingPage() {
               onChange={(e) => setToText(e.target.value)}
               disabled={isTesting}
             />
+          </div>
+        </div>
+
+        <div className="mt-4 bg-dark-surface border border-gray-700 rounded-lg p-4">
+          <label className="text-sm font-medium text-gray-300 mb-2 block">
+            Test Environment
+          </label>
+          <div className="flex items-center gap-3">
+            <select
+              className="bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 flex-1 focus:border-teal focus:outline-none"
+              value={stagingIp}
+              onChange={(e) => setStagingIp(e.target.value)}
+              disabled={isTesting}
+            >
+              <option value="">Production (no override)</option>
+              {stagingServers.map((s) => (
+                <option key={s.ip} value={s.ip}>
+                  {s.label} — {s.domains.join(', ')}
+                </option>
+              ))}
+            </select>
+            {stagingIp && (
+              <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal">
+                Staging
+              </span>
+            )}
           </div>
         </div>
 

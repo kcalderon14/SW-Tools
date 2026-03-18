@@ -26,3 +26,6 @@ npm-debug.log*
 
 # Old app (legacy)
 App/
+
+# GitHub workflows
+.github/

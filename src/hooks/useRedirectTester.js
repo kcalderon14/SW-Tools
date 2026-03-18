@@ -18,7 +18,7 @@ export function useRedirectTester() {
   const [isTesting, setIsTesting] = useState(false);
   const abortRef = useRef(null);
 
-  const startTest = useCallback(async (fromUrls, toUrls) => {
+  const startTest = useCallback(async (fromUrls, toUrls, stagingIp = null) => {
     if (fromUrls.length === 0) return;
 
     const controller = new AbortController();
@@ -45,7 +45,7 @@ export function useRedirectTester() {
         const response = await fetch('/api/test-redirect', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: testUrl }),
+          body: JSON.stringify({ url: testUrl, stagingIp: stagingIp || undefined }),
           signal: controller.signal,
         });
 

@@ -11,12 +11,12 @@ app.use(express.json());
 
 // API endpoint
 app.post('/api/test-redirect', async (req, res) => {
-  const { url } = req.body;
+  const { url, stagingIp } = req.body;
   if (!url || typeof url !== 'string') {
     return res.status(400).json({ error: 'Missing url parameter' });
   }
 
-  const result = await testRedirect(url);
+  const result = await testRedirect(url, stagingIp || null);
   res.json(result);
 });
 

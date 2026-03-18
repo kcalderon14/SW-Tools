@@ -107,3 +107,36 @@ export const errors = {
 }
 
 export const fileContent = `ruleName,matchURL,scheme,host,path,query,disabled,result.useIncomingQueryString,result.useIncomingSchemeAndHost,result.useRelativeUrl,result.redirectURL,result.statusCode\n`;
+
+export const stagingServers = [
+    {
+        ip: '23.50.51.34',
+        label: 'Staging A (23.50.51.34)',
+        domains: ['www.solarwinds.com', 'solarwindspartnersummit.com', 'www.dnsstuff.com', 'www.serv-u.com', 'www.pingdom.com']
+    },
+    {
+        ip: '23.50.52.34',
+        label: 'Staging B (23.50.52.34)',
+        domains: ['jobs.solarwinds.com', 'try.solarwinds.com', 'do.solarwinds.com', 'www.itproday.org', 'www.dameware.com', 'www.serv-u.com', 'www.appoptics.com', 'www.loggly.com']
+    },
+    {
+        ip: '23.50.55.49',
+        label: 'Staging C (23.50.55.49)',
+        domains: ['support.solarwinds.com', 'www.serv-u.com', 'www.papertrail.com']
+    },
+    {
+        ip: '23.203.12.81',
+        label: 'Staging D (23.203.12.81)',
+        domains: ['www.webhelpdesk.com', 'www.kiwisyslog.com', 'www.solarwinds.ru', 'try.solarwinds.com']
+    },
+    {
+        ip: '23.50.52.41',
+        label: 'Staging E (23.50.52.41)',
+        domains: ['www.pingdom.com']
+    },
+    {
+        ip: '23.34.126.223',
+        label: 'Staging F (23.34.126.223)',
+        domains: ['www.webhelpdesk.com']
+    }
+];
