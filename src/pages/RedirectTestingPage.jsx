@@ -7,6 +7,8 @@ export default function RedirectTestingPage() {
   const [fromText, setFromText] = useState('');
   const [toText, setToText] = useState('');
   const [stagingIp, setStagingIp] = useState('');
+  const [customIp, setCustomIp] = useState('');
+  const [customDomain, setCustomDomain] = useState('');
   const { results, progress, isTesting, startTest, cancelTest, clearResults } = useRedirectTester();
 
   const textareaClass =
@@ -20,13 +22,16 @@ export default function RedirectTestingPage() {
   const mismatch = fromLines.length > 0 && toLines.length > 0 && fromLines.length !== toLines.length;
 
   const handleTest = () => {
-    startTest(fromLines, toLines, stagingIp || null);
+    const ip = stagingIp === 'custom' ? customIp.trim() : (stagingIp || null);
+    startTest(fromLines, toLines, ip);
   };
 
   const handleClear = () => {
     setFromText('');
     setToText('');
     setStagingIp('');
+    setCustomIp('');
+    setCustomDomain('');
     clearResults();
   };
 
@@ -75,26 +80,61 @@ export default function RedirectTestingPage() {
           <label className="text-sm font-medium text-gray-300 mb-2 block">
             Test Environment
           </label>
-          <div className="flex items-center gap-3">
-            <select
-              className="bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 flex-1 focus:border-teal focus:outline-none"
-              value={stagingIp}
-              onChange={(e) => setStagingIp(e.target.value)}
-              disabled={isTesting}
-            >
-              <option value="">Production (no override)</option>
-              {stagingServers.map((s) => (
-                <option key={s.ip} value={s.ip}>
-                  {s.label} — {s.domains.join(', ')}
-                </option>
-              ))}
-            </select>
-            {stagingIp && (
+          <select
+            className="bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full focus:border-teal focus:outline-none"
+            value={stagingIp}
+            onChange={(e) => setStagingIp(e.target.value)}
+            disabled={isTesting}
+          >
+            <option value="">Production (no override)</option>
+            {stagingServers.map((s) => (
+              <option key={s.ip} value={s.ip}>
+                {s.label}
+              </option>
+            ))}
+            <option value="custom">Custom Server...</option>
+          </select>
+
+          {stagingIp && stagingIp !== 'custom' && (
+            <div className="mt-2 flex items-center gap-2">
               <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal">
                 Staging
               </span>
-            )}
-          </div>
+              <span className="text-xs text-gray-400">
+                {stagingServers.find((s) => s.ip === stagingIp)?.domains.join(', ')}
+              </span>
+            </div>
+          )}
+
+          {stagingIp === 'custom' && (
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-xs text-gray-400 mb-1 block">Server IP</label>
+                <input
+                  type="text"
+                  className="bg-dark-bg text-white border border-gray-600 rounded px-3 py-2 w-full text-sm focus:border-teal focus:outline-none"
+                  placeholder="e.g. 23.50.51.34"
+                  value={customIp}
+                  onChange={(e) => setCustomIp(e.target.value)}
+                  disabled={isTesting}
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 mb-1 block">Domain (optional note)</label>
+                <input
+                  type="text"
+                  className="bg-dark-bg text-white border border-gray-600 rounded px-3 py-2 w-full text-sm focus:border-teal focus:outline-none"
+                  placeholder="e.g. www.solarwinds.com"
+                  value={customDomain}
+                  onChange={(e) => setCustomDomain(e.target.value)}
+                  disabled={isTesting}
+                />
+              </div>
+              <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal w-fit">
+                Custom
+              </span>
+            </div>
+          )}
         </div>
 
         {mismatch && (
