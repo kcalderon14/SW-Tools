@@ -31,6 +31,24 @@ function TestingIcon() {
   );
 }
 
+function HtmlHelpersIcon() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M16 18l6-6-6-6" />
+      <path d="M8 6l-6 6 6 6" />
+    </svg>
+  );
+}
+
+function LinkBuilderIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  );
+}
+
 function SettingsIcon() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -77,6 +95,50 @@ function NavItemDisabled({ icon, label, isCollapsed }) {
   );
 }
 
+function NavGroup({ icon, label, isCollapsed, children, defaultOpen, basePath }) {
+  const location = useLocation();
+  const [open, setOpen] = useState(defaultOpen || false);
+
+  // Auto-open if any child route is active
+  const isChildActive = basePath ? location.pathname.startsWith(basePath) : false;
+  const isOpen = open || isChildActive;
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full ${
+          isChildActive ? 'text-teal' : 'text-gray-300 hover:bg-dark-bg'
+        } ${isCollapsed ? 'justify-center px-2' : 'justify-start'}`}
+        title={isCollapsed ? label : undefined}
+      >
+        {icon}
+        {!isCollapsed && (
+          <>
+            <span className="flex-1 text-left">{label}</span>
+            <svg
+              className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-90' : ''}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </>
+        )}
+      </button>
+      {isOpen && !isCollapsed && (
+        <div className="ml-4 mt-1 space-y-1 border-l border-gray-700 pl-3">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Sidebar({ isCollapsed, onToggle }) {
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const collapsed = typeof isCollapsed === 'boolean' ? isCollapsed : internalCollapsed;
@@ -109,8 +171,13 @@ export default function Sidebar({ isCollapsed, onToggle }) {
 
         <nav className="space-y-2">
           <NavItemDisabled icon={<DashboardIcon />} label="Dashboard" isCollapsed={collapsed} />
-          <NavItemLink to="/" icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} />
-          <NavItemLink to="/testing" icon={<TestingIcon />} label="Redirect Testing" isCollapsed={collapsed} />
+          <NavGroup icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} basePath="/redirects">
+            <NavItemLink to="/redirects" icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} />
+            <NavItemLink to="/redirects/testing" icon={<TestingIcon />} label="Redirect Testing" isCollapsed={collapsed} />
+          </NavGroup>
+          <NavGroup icon={<HtmlHelpersIcon />} label="HTML Helpers" isCollapsed={collapsed} basePath="/html-helpers">
+            <NavItemLink to="/html-helpers/link-builder" icon={<LinkBuilderIcon />} label="Link Builder" isCollapsed={collapsed} />
+          </NavGroup>
           <NavItemDisabled icon={<SettingsIcon />} label="Settings" isCollapsed={collapsed} />
         </nav>
       </div>
