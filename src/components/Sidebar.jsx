@@ -49,6 +49,19 @@ function LinkBuilderIcon() {
   );
 }
 
+function ListGeneratorIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <line x1="9" y1="6" x2="20" y2="6" />
+      <line x1="9" y1="12" x2="20" y2="12" />
+      <line x1="9" y1="18" x2="20" y2="18" />
+      <rect x="3" y="4" width="4" height="4" rx="0.5" />
+      <rect x="3" y="10" width="4" height="4" rx="0.5" />
+      <rect x="3" y="16" width="4" height="4" rx="0.5" />
+    </svg>
+  );
+}
+
 function SettingsIcon() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -177,6 +190,7 @@ export default function Sidebar({ isCollapsed, onToggle }) {
           </NavGroup>
           <NavGroup icon={<HtmlHelpersIcon />} label="HTML Helpers" isCollapsed={collapsed} basePath="/html-helpers">
             <NavItemLink to="/html-helpers/link-builder" icon={<LinkBuilderIcon />} label="Link Builder" isCollapsed={collapsed} />
+            <NavItemLink to="/html-helpers/list-generator" icon={<ListGeneratorIcon />} label="List Generator" isCollapsed={collapsed} />
           </NavGroup>
           <NavItemDisabled icon={<SettingsIcon />} label="Settings" isCollapsed={collapsed} />
         </nav>

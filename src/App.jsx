@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import RedirectsPage from './pages/RedirectsPage';
 import RedirectTestingPage from './pages/RedirectTestingPage';
 import HtmlHelpersPage from './pages/HtmlHelpersPage';
+import ListGeneratorPage from './pages/ListGeneratorPage';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/redirects" element={<RedirectsPage />} />
         <Route path="/redirects/testing" element={<RedirectTestingPage />} />
         <Route path="/html-helpers/link-builder" element={<HtmlHelpersPage />} />
+        <Route path="/html-helpers/list-generator" element={<ListGeneratorPage />} />
       </Routes>
     </Layout>
   );
