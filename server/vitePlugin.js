@@ -1,4 +1,5 @@
 import { testRedirect } from './redirectProxy.js';
+import { resolveDns } from './dnsResolver.js';
 
 export default function redirectTestPlugin() {
   return {
@@ -26,6 +27,37 @@ export default function redirectTestPlugin() {
             }
 
             const result = await testRedirect(url, stagingIp || null);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(result));
+          } catch {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Invalid request body' }));
+          }
+        });
+      });
+
+      server.middlewares.use('/api/resolve-dns', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.writeHead(405, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Method not allowed' }));
+          return;
+        }
+
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
+
+        req.on('end', async () => {
+          try {
+            const { hostname } = JSON.parse(body);
+            if (!hostname || typeof hostname !== 'string') {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Missing hostname parameter' }));
+              return;
+            }
+
+            const result = await resolveDns(hostname);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(result));
           } catch {

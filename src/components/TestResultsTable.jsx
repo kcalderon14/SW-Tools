@@ -10,6 +10,7 @@ export default function TestResultsTable({ results }) {
         <thead>
           <tr className="bg-dark-surface">
             <th className={thClass}>#</th>
+            <th className={thClass}>LOC</th>
             <th className={thClass}>From</th>
             <th className={thClass}>Expected To</th>
             <th className={thClass}>Actual URL</th>
@@ -24,6 +25,15 @@ export default function TestResultsTable({ results }) {
               className={`${r.index % 2 === 0 ? 'bg-dark-surface' : 'bg-dark-bg'}`}
             >
               <td className={`${tdClass} text-center w-12`}>{r.index}</td>
+              <td className={`${tdClass} text-center`}>
+                {r.loc ? (
+                  <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal">
+                    {r.loc.toUpperCase()}
+                  </span>
+                ) : (
+                  <span className="text-gray-500">—</span>
+                )}
+              </td>
               <td className={`${tdClass} break-all max-w-48`}>{r.from}</td>
               <td className={`${tdClass} break-all max-w-48`}>{r.expectedTo}</td>
               <td className={`${tdClass} break-all max-w-48`}>

@@ -4,6 +4,32 @@ import { URL } from 'node:url';
 
 const IPV4_REGEX = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
 
+function isSSLError(err) {
+  const msg = (err && err.message) || '';
+  return msg.includes('EPROTO') || msg.includes('SSL') || msg.includes('ERR_SSL');
+}
+
+function makeRequest(options, client) {
+  return new Promise((resolve) => {
+    const req = client.request(options, (res) => {
+      const location = res.headers.location || null;
+      resolve({ statusCode: res.statusCode, location, error: null });
+      res.resume();
+    });
+
+    req.on('timeout', () => {
+      req.destroy();
+      resolve({ statusCode: null, location: null, error: 'Request timed out' });
+    });
+
+    req.on('error', (err) => {
+      resolve({ statusCode: null, location: null, error: err.message });
+    });
+
+    req.end();
+  });
+}
+
 async function testRedirect(targetUrl, stagingIp = null) {
   let parsed;
   try {
@@ -39,26 +65,25 @@ async function testRedirect(targetUrl, stagingIp = null) {
 
   if (isHttps) {
     options.servername = parsed.hostname;
+    options.minVersion = 'TLSv1.2';
   }
 
-  return new Promise((resolve) => {
-    const req = client.request(options, (res) => {
-      const location = res.headers.location || null;
-      resolve({ statusCode: res.statusCode, location, error: null });
-      res.resume();
-    });
+  const result = await makeRequest(options, client);
 
-    req.on('timeout', () => {
-      req.destroy();
-      resolve({ statusCode: null, location: null, error: 'Request timed out' });
-    });
+  if (result.error && isSSLError({ message: result.error }) && isHttps) {
+    const httpOptions = { ...options, port: 80 };
+    delete httpOptions.servername;
+    delete httpOptions.rejectUnauthorized;
+    delete httpOptions.minVersion;
 
-    req.on('error', (err) => {
-      resolve({ statusCode: null, location: null, error: err.message });
-    });
+    const httpResult = await makeRequest(httpOptions, http);
+    if (!httpResult.error) {
+      return httpResult;
+    }
+    return { statusCode: null, location: null, error: 'SSL/TLS handshake failed and HTTP fallback also failed' };
+  }
 
-    req.end();
-  });
+  return result;
 }
 
 export default async function handler(req, res) {

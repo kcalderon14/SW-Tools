@@ -140,3 +140,5 @@ export const stagingServers = [
         domains: ['www.webhelpdesk.com']
     }
 ];
+
+export const STAGING_HOSTNAME = 'swdc-ion.edgekey-staging.net';

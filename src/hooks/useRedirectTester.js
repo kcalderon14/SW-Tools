@@ -1,4 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
+import { expandUrlPairs } from '../utils/locExpander';
+import { sitesData } from '../config/data';
 
 function normalizeUrl(url) {
   if (!url) return '';
@@ -16,10 +18,17 @@ export function useRedirectTester() {
   const [results, setResults] = useState([]);
   const [progress, setProgress] = useState(0);
   const [isTesting, setIsTesting] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
   const abortRef = useRef(null);
 
-  const startTest = useCallback(async (fromUrls, toUrls, stagingIp = null) => {
-    if (fromUrls.length === 0) return;
+  const startTest = useCallback(async (fromUrls, toUrls, stagingIp = null, { locExpandFrom = false, locExpandTo = false } = {}) => {
+    const pairs = expandUrlPairs(fromUrls, toUrls, locExpandFrom, locExpandTo, sitesData);
+    const total = pairs.length;
+
+    if (total === 0) {
+      setTotalCount(0);
+      return;
+    }
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -27,15 +36,16 @@ export function useRedirectTester() {
     setIsTesting(true);
     setResults([]);
     setProgress(0);
+    setTotalCount(total);
 
-    const total = fromUrls.length;
     const accumulated = [];
 
     for (let i = 0; i < total; i++) {
       if (controller.signal.aborted) break;
 
-      const from = fromUrls[i].trim();
-      const expectedTo = toUrls[i] ? toUrls[i].trim() : '';
+      const from = pairs[i].fromUrl.trim();
+      const expectedTo = pairs[i].expectedToUrl ? pairs[i].expectedToUrl.trim() : '';
+      const loc = pairs[i].loc;
 
       // Ensure the from URL has a protocol for the fetch
       const testUrl = from.startsWith('http') ? from : `https://${from}`;
@@ -60,6 +70,7 @@ export function useRedirectTester() {
             statusCode: null,
             pass: false,
             error: data.error,
+            loc,
           };
         } else {
           const actualUrl = data.location || from;
@@ -75,6 +86,7 @@ export function useRedirectTester() {
             statusCode: data.statusCode,
             pass,
             error: null,
+            loc,
           };
         }
       } catch (err) {
@@ -87,6 +99,7 @@ export function useRedirectTester() {
           statusCode: null,
           pass: false,
           error: 'Proxy unreachable',
+          loc,
         };
       }
 
@@ -109,12 +122,14 @@ export function useRedirectTester() {
     setResults([]);
     setProgress(0);
     setIsTesting(false);
+    setTotalCount(0);
   }, []);
 
   return {
     results,
     progress,
     isTesting,
+    totalCount,
     startTest,
     cancelTest,
     clearResults,
