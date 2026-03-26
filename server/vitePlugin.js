@@ -13,7 +13,16 @@ export default function redirectTestPlugin() {
         }
 
         let body = '';
+        let bodySize = 0;
+        const MAX_BODY = 1024 * 1024; // 1MB limit
         req.on('data', (chunk) => {
+          bodySize += chunk.length;
+          if (bodySize > MAX_BODY) {
+            req.destroy();
+            res.writeHead(413, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Request body too large' }));
+            return;
+          }
           body += chunk;
         });
 
@@ -44,7 +53,16 @@ export default function redirectTestPlugin() {
         }
 
         let body = '';
+        let bodySize = 0;
+        const MAX_BODY = 1024 * 1024; // 1MB limit
         req.on('data', (chunk) => {
+          bodySize += chunk.length;
+          if (bodySize > MAX_BODY) {
+            req.destroy();
+            res.writeHead(413, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Request body too large' }));
+            return;
+          }
           body += chunk;
         });
 
@@ -54,6 +72,13 @@ export default function redirectTestPlugin() {
             if (!hostname || typeof hostname !== 'string') {
               res.writeHead(400, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ error: 'Missing hostname parameter' }));
+              return;
+            }
+
+            const ALLOWED_HOSTNAMES = ['swdc-ion.edgekey-staging.net'];
+            if (!ALLOWED_HOSTNAMES.includes(hostname.trim().toLowerCase())) {
+              res.writeHead(403, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Hostname not in allowlist' }));
               return;
             }
 

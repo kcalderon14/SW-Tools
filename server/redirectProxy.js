@@ -35,6 +35,26 @@ function makeRequest(options, client) {
   });
 }
 
+function isPrivateIp(ip) {
+  const parts = ip.split('.').map(Number);
+  if (parts.length !== 4 || parts.some((p) => isNaN(p) || p < 0 || p > 255)) return true;
+  if (parts[0] === 127) return true;
+  if (parts[0] === 10) return true;
+  if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+  if (parts[0] === 192 && parts[1] === 168) return true;
+  if (parts[0] === 169 && parts[1] === 254) return true;
+  if (parts.every((p) => p === 0)) return true;
+  return false;
+}
+
+function isBlockedHost(hostname) {
+  if (!hostname) return true;
+  const lower = hostname.toLowerCase();
+  if (lower === 'localhost' || lower === '[::1]') return true;
+  if (IPV4_REGEX.test(lower) && isPrivateIp(lower)) return true;
+  return false;
+}
+
 export async function testRedirect(targetUrl, stagingIp = null) {
   let parsed;
   try {
@@ -47,8 +67,16 @@ export async function testRedirect(targetUrl, stagingIp = null) {
     return { statusCode: null, location: null, error: 'Only http and https URLs are supported' };
   }
 
+  if (isBlockedHost(parsed.hostname)) {
+    return { statusCode: null, location: null, error: 'Requests to internal/private addresses are not allowed' };
+  }
+
   if (stagingIp && !IPV4_REGEX.test(stagingIp)) {
     return { statusCode: null, location: null, error: 'Invalid staging IP address' };
+  }
+
+  if (stagingIp && isPrivateIp(stagingIp)) {
+    return { statusCode: null, location: null, error: 'Staging IP must not be a private/internal address' };
   }
 
   const isHttps = parsed.protocol === 'https:';
