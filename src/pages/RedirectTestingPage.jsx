@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRedirectTester } from '../hooks/useRedirectTester';
 import TestResultsTable from '../components/TestResultsTable';
 import { STAGING_HOSTNAME } from '../config/data';
+import { formatResultsForJira } from '../utils/jiraFormatter';
 
 export default function RedirectTestingPage() {
   const [fromText, setFromText] = useState('');
@@ -14,6 +15,7 @@ export default function RedirectTestingPage() {
   const [resolvedIp, setResolvedIp] = useState(null);
   const [isResolving, setIsResolving] = useState(false);
   const [resolveError, setResolveError] = useState(null);
+  const [copied, setCopied] = useState(false);
   const { results, progress, isTesting, totalCount, startTest, cancelTest, clearResults } = useRedirectTester();
 
   const textareaClass =
@@ -74,7 +76,30 @@ export default function RedirectTestingPage() {
     setResolvedIp(null);
     setResolveError(null);
     setIsResolving(false);
+    setCopied(false);
     clearResults();
+  };
+
+  const handleCopyForJira = async () => {
+    const serverIp = resolvedIp || (stagingIp === 'custom' ? customIp.trim() : null);
+    const jiraMarkup = formatResultsForJira(results, serverIp);
+    try {
+      await navigator.clipboard.writeText(jiraMarkup);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textarea = document.createElement('textarea');
+      textarea.value = jiraMarkup;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const getRows = (text) => Math.max(10, text.split('\n').length);
@@ -278,9 +303,33 @@ export default function RedirectTestingPage() {
         <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">Results</h2>
-            <div className="flex gap-4 text-sm">
-              <span className="text-success font-semibold">{passCount} passed</span>
-              <span className="text-error font-semibold">{failCount} failed</span>
+            <div className="flex items-center gap-4">
+              <div className="flex gap-4 text-sm">
+                <span className="text-success font-semibold">{passCount} passed</span>
+                <span className="text-error font-semibold">{failCount} failed</span>
+              </div>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors"
+                onClick={handleCopyForJira}
+              >
+                {copied ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-success" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                      <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
+                    Copy for Jira
+                  </>
+                )}
+              </button>
             </div>
           </div>
           {resolvedIp && (
