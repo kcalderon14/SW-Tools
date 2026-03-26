@@ -82,21 +82,27 @@ export default function RedirectTestingPage() {
 
   const handleCopyForJira = async () => {
     const serverIp = resolvedIp || (stagingIp === 'custom' ? customIp.trim() : null);
-    const jiraMarkup = formatResultsForJira(results, serverIp);
+    const html = formatResultsForJira(results, serverIp);
     try {
-      await navigator.clipboard.writeText(jiraMarkup);
+      const blob = new Blob([html], { type: 'text/html' });
+      await navigator.clipboard.write([new ClipboardItem({ 'text/html': blob, 'text/plain': new Blob([html], { type: 'text/plain' }) })]);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for older browsers
-      const textarea = document.createElement('textarea');
-      textarea.value = jiraMarkup;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
+      // Fallback: copy as HTML string using execCommand
+      const container = document.createElement('div');
+      container.innerHTML = html;
+      container.style.position = 'fixed';
+      container.style.opacity = '0';
+      document.body.appendChild(container);
+      const range = document.createRange();
+      range.selectNodeContents(container);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
       document.execCommand('copy');
-      document.body.removeChild(textarea);
+      selection.removeAllRanges();
+      document.body.removeChild(container);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
