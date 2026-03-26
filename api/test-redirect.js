@@ -1,6 +1,6 @@
-import http from 'node:http';
-import https from 'node:https';
-import { URL } from 'node:url';
+import http from 'http';
+import https from 'https';
+import { URL } from 'url';
 
 const IPV4_REGEX = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
 

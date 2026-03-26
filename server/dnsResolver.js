@@ -1,4 +1,4 @@
-import dns from 'node:dns/promises';
+import { promises as dns } from 'dns';
 
 export async function resolveDns(hostname) {
   if (!hostname || typeof hostname !== 'string') {
