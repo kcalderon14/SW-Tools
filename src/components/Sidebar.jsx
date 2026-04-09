@@ -71,6 +71,25 @@ function SettingsIcon() {
   );
 }
 
+function BuilderIcon() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  );
+}
+
+function IndexCardIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <rect x="2" y="3" width="20" height="18" rx="2" />
+      <line x1="6" y1="8" x2="18" y2="8" />
+      <line x1="6" y1="12" x2="14" y2="12" />
+      <line x1="6" y1="16" x2="10" y2="16" />
+    </svg>
+  );
+}
+
 function NavItemLink({ to, icon, label, isCollapsed }) {
   const baseClasses = 'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full';
   const activeClasses = 'border-l-4 border-teal text-teal bg-dark-bg';
@@ -191,6 +210,9 @@ export default function Sidebar({ isCollapsed, onToggle }) {
           <NavGroup icon={<HtmlHelpersIcon />} label="HTML Helpers" isCollapsed={collapsed} basePath="/html-helpers">
             <NavItemLink to="/html-helpers/link-builder" icon={<LinkBuilderIcon />} label="Link Builder" isCollapsed={collapsed} />
             <NavItemLink to="/html-helpers/list-generator" icon={<ListGeneratorIcon />} label="List Generator" isCollapsed={collapsed} />
+          </NavGroup>
+          <NavGroup icon={<BuilderIcon />} label="Builder" isCollapsed={collapsed} basePath="/builder">
+            <NavItemLink to="/builder/resource-center-index-card" icon={<IndexCardIcon />} label="RC Index Card" isCollapsed={collapsed} />
           </NavGroup>
           <NavItemDisabled icon={<SettingsIcon />} label="Settings" isCollapsed={collapsed} />
         </nav>

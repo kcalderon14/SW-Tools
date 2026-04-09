@@ -4,6 +4,7 @@ import RedirectsPage from './pages/RedirectsPage';
 import RedirectTestingPage from './pages/RedirectTestingPage';
 import HtmlHelpersPage from './pages/HtmlHelpersPage';
 import ListGeneratorPage from './pages/ListGeneratorPage';
+import ResourceCenterIndexCardPage from './pages/ResourceCenterIndexCardPage';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/redirects/testing" element={<RedirectTestingPage />} />
         <Route path="/html-helpers/link-builder" element={<HtmlHelpersPage />} />
         <Route path="/html-helpers/list-generator" element={<ListGeneratorPage />} />
+        <Route path="/builder/resource-center-index-card" element={<ResourceCenterIndexCardPage />} />
       </Routes>
     </Layout>
   );
