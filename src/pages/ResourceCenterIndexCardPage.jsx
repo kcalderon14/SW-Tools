@@ -275,20 +275,37 @@ export default function ResourceCenterIndexCardPage() {
         <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Results</h2>
 
-          <div className="space-y-6">
-            {generatedResults.map((group) => (
-              <div key={group.section} className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-3">
-                <h3 className="text-sm font-semibold text-gray-200">
-                  {group.section}
-                  {group.param ? (
-                    <span className="ml-2 text-xs font-normal text-gray-400">({group.param})</span>
-                  ) : null}
-                </h3>
-                {group.values.map((val) => (
-                  <ReadOnlyFieldWithCopy key={val} value={val} />
-                ))}
+          <div className="space-y-4">
+            {/* Top results: Targeting URL, Text for URL */}
+            {generatedResults
+              .filter((g) => !g.param)
+              .map((group) => (
+                <div key={group.section} className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-3">
+                  <h3 className="text-sm font-semibold text-gray-200">{group.section}</h3>
+                  {group.values.map((val) => (
+                    <ReadOnlyFieldWithCopy key={val} value={val} />
+                  ))}
+                </div>
+              ))}
+
+            {/* Categorization results in grid */}
+            {generatedResults.some((g) => g.param) ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                {generatedResults
+                  .filter((g) => g.param)
+                  .map((group) => (
+                    <div key={group.section} className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-3">
+                      <h3 className="text-sm font-semibold text-gray-200">
+                        {group.section}
+                        <span className="ml-2 text-xs font-normal text-gray-400">({group.param})</span>
+                      </h3>
+                      {group.values.map((val) => (
+                        <ReadOnlyFieldWithCopy key={val} value={val} />
+                      ))}
+                    </div>
+                  ))}
               </div>
-            ))}
+            ) : null}
           </div>
         </section>
       ) : null}
