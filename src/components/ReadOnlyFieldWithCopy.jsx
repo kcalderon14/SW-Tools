@@ -18,12 +18,12 @@ export default function ReadOnlyFieldWithCopy({ label, value, className }) {
     <div className={className}>
       {label ? <label className="text-sm font-medium text-gray-300 mb-1 block">{label}</label> : null}
 
-      <div className="flex items-stretch">
+      <div className="flex items-stretch min-w-0">
         <input
           type="text"
           readOnly
           value={value}
-          className="bg-gray-800 text-white border-none rounded-l px-3 py-2 flex-1 outline-none cursor-default"
+          className="bg-gray-800 text-white border-none rounded-l px-3 py-2 flex-1 min-w-0 outline-none cursor-default"
         />
 
         {hasValue ? (

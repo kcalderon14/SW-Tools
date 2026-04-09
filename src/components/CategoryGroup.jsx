@@ -22,7 +22,7 @@ export default function CategoryGroup({ subtitle, options, checkedValues, onTogg
         ) : null}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
             <input

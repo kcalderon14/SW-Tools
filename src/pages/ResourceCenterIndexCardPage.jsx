@@ -133,7 +133,7 @@ export default function ResourceCenterIndexCardPage() {
 
       {/* Section A + B: Targeting URL & Asset Type side by side */}
       <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h2 className="text-xl font-semibold text-white mb-4">Targeting URL</h2>
             <ReadOnlyFieldWithCopy label="Targeting URL" value={DEFAULT_TARGETING_URL} />
@@ -170,7 +170,7 @@ export default function ResourceCenterIndexCardPage() {
 
         <div className="space-y-6">
           {/* Resource Type, Industries & Solutions */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-6">
             <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
               <h3 className="text-lg font-semibold text-white mb-3">Resource Type</h3>
               <ReadOnlyFieldWithCopy label="Parameter Name" value="resourceType" />
@@ -235,7 +235,7 @@ export default function ResourceCenterIndexCardPage() {
               {CATEGORY_GROUPS.map((group) => (
                 <div
                   key={group.subtitle}
-                  className="border border-gray-600 rounded-lg p-3"
+                  className="border border-gray-600 rounded-lg p-3 overflow-hidden"
                 >
                   <CategoryGroup
                     subtitle={group.subtitle}
