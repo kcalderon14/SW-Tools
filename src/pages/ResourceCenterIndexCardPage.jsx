@@ -169,60 +169,35 @@ export default function ResourceCenterIndexCardPage() {
         <h2 className="text-xl font-semibold text-white mb-4">Categorization</h2>
 
         <div className="space-y-6">
-          {/* Resource Type */}
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-            <h3 className="text-lg font-semibold text-white mb-3">Resource Type</h3>
-            <ReadOnlyFieldWithCopy label="Parameter Name" value="resourceType" />
-            <ReadOnlyFieldWithCopy label="Name" value="Resource type" />
+          {/* Resource Type, Industries & Solutions */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
+              <h3 className="text-lg font-semibold text-white mb-3">Resource Type</h3>
+              <ReadOnlyFieldWithCopy label="Parameter Name" value="resourceType" />
+              <ReadOnlyFieldWithCopy label="Name" value="Resource type" />
 
-            <div>
-              <label className="text-sm font-medium text-gray-300 mb-1 block">Resource Type</label>
-              <select
-                className={selectClass}
-                value={selectedResourceType}
-                onChange={(event) => setSelectedResourceType(event.target.value)}
-              >
-                <option value="">Select a resource type...</option>
-                <optgroup label="Standard">
-                  {RESOURCE_TYPE_STANDARD.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Video">
-                  {RESOURCE_TYPE_VIDEO.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
-                  ))}
-                </optgroup>
-              </select>
-            </div>
-          </div>
-
-          {/* Category */}
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-            <h3 className="text-lg font-semibold text-white mb-3">Category</h3>
-            <ReadOnlyFieldWithCopy label="Parameter Name" value="product" />
-            <ReadOnlyFieldWithCopy label="Name" value="Category/product" />
-
-            <div className="space-y-4">
-              {CATEGORY_GROUPS.map((group) => (
-                <div
-                  key={group.subtitle}
-                  className="border border-gray-600 rounded-lg p-3"
+              <div>
+                <label className="text-sm font-medium text-gray-300 mb-1 block">Resource Type</label>
+                <select
+                  className={selectClass}
+                  value={selectedResourceType}
+                  onChange={(event) => setSelectedResourceType(event.target.value)}
                 >
-                  <CategoryGroup
-                    subtitle={group.subtitle}
-                    options={group.options}
-                    checkedValues={checkedCategories[group.subtitle] || new Set()}
-                    onToggle={(option) => toggleCategory(group.subtitle, option)}
-                    onSetAll={(opts) => setCategoryAll(group.subtitle, opts)}
-                  />
-                </div>
-              ))}
+                  <option value="">Select a resource type...</option>
+                  <optgroup label="Standard">
+                    {RESOURCE_TYPE_STANDARD.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Video">
+                    {RESOURCE_TYPE_VIDEO.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </optgroup>
+                </select>
+              </div>
             </div>
-          </div>
 
-          {/* Industries & Solutions */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
               <h3 className="text-lg font-semibold text-white mb-3">Industries</h3>
               <ReadOnlyFieldWithCopy label="Parameter Name" value="industries" />
@@ -247,6 +222,30 @@ export default function ResourceCenterIndexCardPage() {
                 onToggle={toggleInSet(setCheckedSolutions)}
                 onSetAll={setAllInSet(setCheckedSolutions)}
               />
+            </div>
+          </div>
+
+          {/* Category */}
+          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
+            <h3 className="text-lg font-semibold text-white mb-3">Category</h3>
+            <ReadOnlyFieldWithCopy label="Parameter Name" value="product" />
+            <ReadOnlyFieldWithCopy label="Name" value="Category/product" />
+
+            <div className="space-y-4">
+              {CATEGORY_GROUPS.map((group) => (
+                <div
+                  key={group.subtitle}
+                  className="border border-gray-600 rounded-lg p-3"
+                >
+                  <CategoryGroup
+                    subtitle={group.subtitle}
+                    options={group.options}
+                    checkedValues={checkedCategories[group.subtitle] || new Set()}
+                    onToggle={(option) => toggleCategory(group.subtitle, option)}
+                    onSetAll={(opts) => setCategoryAll(group.subtitle, opts)}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
