@@ -156,35 +156,28 @@ describe('ResourceCenterIndexCardPage', () => {
     expect(screen.getByText('Builder')).toBeInTheDocument();
   });
 
-  it('shows targeting URL with default value', () => {
-    renderPage();
-    expect(screen.getByDisplayValue('/resources')).toBeInTheDocument();
-  });
-
   it('renders asset type dropdown', () => {
     renderPage();
     expect(screen.getByText('Select an asset type...')).toBeInTheDocument();
   });
 
-  it('shows Text for URL when asset type is selected', () => {
+  it('does not show targeting URL in input area', () => {
     renderPage();
-    // Find the asset type select (first select on the page)
-    const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[0], { target: { value: 'Brochure' } });
-    expect(screen.getByDisplayValue('Read Brochure')).toBeInTheDocument();
+    expect(screen.queryByDisplayValue('/resources')).not.toBeInTheDocument();
   });
 
-  it('renders resource type dropdown with optgroups', () => {
+  it('has only one dropdown (asset type)', () => {
     renderPage();
-    expect(screen.getByText('Select a resource type...')).toBeInTheDocument();
+    expect(screen.getAllByRole('combobox')).toHaveLength(1);
   });
 
-  it('renders categorization sections', () => {
+  it('renders categorization sections without Parameter Name fields', () => {
     renderPage();
-    expect(screen.getAllByText('Resource Type').length).toBeGreaterThan(0);
     expect(screen.getByText('Category')).toBeInTheDocument();
     expect(screen.getByText('Industries')).toBeInTheDocument();
     expect(screen.getByText('Solutions')).toBeInTheDocument();
+    expect(screen.queryByDisplayValue('resourceType')).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('product')).not.toBeInTheDocument();
   });
 
   it('renders Generate and Clear buttons', () => {
@@ -200,24 +193,32 @@ describe('ResourceCenterIndexCardPage', () => {
 
   it('Generate button enables when asset type is selected', () => {
     renderPage();
-    const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[0], { target: { value: 'Video' } });
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: 'Video' } });
     expect(screen.getByText('Generate')).not.toBeDisabled();
   });
 
-  it('generates results when Generate is clicked', () => {
+  it('generates results with targeting URL, resource type, and text for URL', () => {
     renderPage();
-    const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[0], { target: { value: 'Datasheet' } });
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: 'Datasheet' } });
     fireEvent.click(screen.getByText('Generate'));
     expect(screen.getByText('Results')).toBeInTheDocument();
-    expect(screen.getAllByDisplayValue('View Datasheet').length).toBeGreaterThan(0);
+    // Targeting URL in results
+    expect(screen.getByDisplayValue('/resources')).toBeInTheDocument();
+    // Text for URL
+    expect(screen.getByDisplayValue('View Datasheet')).toBeInTheDocument();
+    // Parameter Name shown in results
+    expect(screen.getByDisplayValue('resourceType')).toBeInTheDocument();
+    // Resource type value appears in both select and result
+    const datasheetFields = screen.getAllByDisplayValue('Datasheet');
+    expect(datasheetFields.length).toBeGreaterThanOrEqual(2);
   });
 
   it('Clear resets all selections and results', () => {
     renderPage();
-    const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[0], { target: { value: 'Report' } });
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: 'Report' } });
     fireEvent.click(screen.getByText('Generate'));
     expect(screen.getByText('Results')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Clear'));
@@ -225,37 +226,22 @@ describe('ResourceCenterIndexCardPage', () => {
     expect(screen.getByText('Generate')).toBeDisabled();
   });
 
-  it('generates resource type result for standard selection', () => {
-    renderPage();
-    const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[1], { target: { value: 'Brochure' } });
-    fireEvent.click(screen.getByText('Generate'));
-
-    const resultsHeading = screen.getByRole('heading', { name: 'Results' });
-    const resultsSection = resultsHeading.closest('section');
-    expect(resultsSection).not.toBeNull();
-    expect(within(resultsSection).getByDisplayValue('Brochure')).toBeInTheDocument();
-  });
-
-  it('generates resource type result with Video prefix for video selection', () => {
-    renderPage();
-    const selects = screen.getAllByRole('combobox');
-    fireEvent.change(selects[1], { target: { value: 'Product Walkthrough' } });
-    fireEvent.click(screen.getByText('Generate'));
-    expect(screen.getByDisplayValue('Video\\Product Walkthrough')).toBeInTheDocument();
-  });
-
   it('generates industry results for checked industries', () => {
     renderPage();
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Education' }));
+    fireEvent.click(screen.getByText('Education'));
     fireEvent.click(screen.getByText('Generate'));
     expect(screen.getByDisplayValue('Industries\\Education')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('industries')).toBeInTheDocument();
   });
 
   it('generates solution results for checked solutions', () => {
     renderPage();
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Observability' }));
+    const solutionsHeading = screen.getByRole('heading', { name: 'Solutions' });
+    const solutionsCard = solutionsHeading.closest('div');
+    const observabilityCheckbox = within(solutionsCard).getByRole('checkbox', { name: 'Observability' });
+    fireEvent.click(observabilityCheckbox);
     fireEvent.click(screen.getByText('Generate'));
     expect(screen.getByDisplayValue('Solutions\\Observability')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('solutions')).toBeInTheDocument();
   });
 });

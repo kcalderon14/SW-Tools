@@ -3,8 +3,6 @@ import ReadOnlyFieldWithCopy from '../components/ReadOnlyFieldWithCopy';
 import CategoryGroup from '../components/CategoryGroup';
 import {
   ASSET_TYPE_OPTIONS,
-  RESOURCE_TYPE_STANDARD,
-  RESOURCE_TYPE_VIDEO,
   CATEGORY_GROUPS,
   INDUSTRIES,
   SOLUTIONS,
@@ -16,7 +14,6 @@ const selectClass =
 
 export default function ResourceCenterIndexCardPage() {
   const [selectedAssetType, setSelectedAssetType] = useState('');
-  const [selectedResourceType, setSelectedResourceType] = useState('');
   const [checkedCategories, setCheckedCategories] = useState({});
   const [checkedIndustries, setCheckedIndustries] = useState(new Set());
   const [checkedSolutions, setCheckedSolutions] = useState(new Set());
@@ -60,19 +57,14 @@ export default function ResourceCenterIndexCardPage() {
     // Targeting URL
     results.push({ section: 'Targeting URL', values: [DEFAULT_TARGETING_URL] });
 
-    // Asset Type
-    if (matchedResult) {
-      results.push({ section: 'Text for URL', values: [matchedResult] });
-    }
-
-    // Resource Type
-    if (selectedResourceType) {
-      const isVideo = RESOURCE_TYPE_VIDEO.includes(selectedResourceType);
-      const resourceValue = isVideo ? 'Video\\' + selectedResourceType : selectedResourceType;
+    // Resource Type (derived from Asset Type selection)
+    if (selectedAssetType) {
       results.push({
         section: 'Resource Type',
         param: 'resourceType',
-        values: [resourceValue],
+        name: 'Resource type',
+        values: [selectedAssetType],
+        extra: matchedResult ? [{ label: 'Text for URL', value: matchedResult }] : [],
       });
     }
 
@@ -87,7 +79,7 @@ export default function ResourceCenterIndexCardPage() {
       }
     });
     if (categoryResults.length > 0) {
-      results.push({ section: 'Category/product', param: 'product', values: categoryResults });
+      results.push({ section: 'Category/product', param: 'product', name: 'Category/product', values: categoryResults });
     }
 
     // Industries
@@ -95,7 +87,7 @@ export default function ResourceCenterIndexCardPage() {
       (opt) => 'Industries\\' + opt
     );
     if (industryResults.length > 0) {
-      results.push({ section: 'Industries', param: 'industries', values: industryResults });
+      results.push({ section: 'Industries', param: 'industries', name: 'Industries', values: industryResults });
     }
 
     // Solutions
@@ -103,7 +95,7 @@ export default function ResourceCenterIndexCardPage() {
       (opt) => 'Solutions\\' + opt
     );
     if (solutionResults.length > 0) {
-      results.push({ section: 'Solutions', param: 'solutions', values: solutionResults });
+      results.push({ section: 'Solutions', param: 'solutions', name: 'Solutions', values: solutionResults });
     }
 
     setGeneratedResults(results);
@@ -111,7 +103,6 @@ export default function ResourceCenterIndexCardPage() {
 
   const handleClear = () => {
     setSelectedAssetType('');
-    setSelectedResourceType('');
     setCheckedCategories({});
     setCheckedIndustries(new Set());
     setCheckedSolutions(new Set());
@@ -120,7 +111,6 @@ export default function ResourceCenterIndexCardPage() {
 
   const hasSelections =
     selectedAssetType ||
-    selectedResourceType ||
     Object.values(checkedCategories).some((s) => s.size > 0) ||
     checkedIndustries.size > 0 ||
     checkedSolutions.size > 0;
@@ -131,78 +121,33 @@ export default function ResourceCenterIndexCardPage() {
         <h1 className="text-3xl font-bold text-white">Builder</h1>
       </header>
 
-      {/* Section A + B: Targeting URL & Asset Type side by side */}
+      {/* Asset Type Selection */}
       <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">Targeting URL</h2>
-            <ReadOnlyFieldWithCopy label="Targeting URL" value={DEFAULT_TARGETING_URL} />
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">Asset Type</h2>
-            <label className="text-sm font-medium text-gray-300 mb-1 block">Asset Type</label>
-            <select
-              className={selectClass}
-              value={selectedAssetType}
-              onChange={(event) => setSelectedAssetType(event.target.value)}
-            >
-              <option value="">Select an asset type...</option>
-              {ASSET_TYPE_OPTIONS.map((opt) => (
-                <option key={opt.label} value={opt.label}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-
-            {matchedResult ? (
-              <div className="mt-4">
-                <ReadOnlyFieldWithCopy label="Text for URL" value={matchedResult} />
-              </div>
-            ) : null}
-          </div>
-        </div>
+        <h2 className="text-xl font-semibold text-white mb-4">Asset Type</h2>
+        <label className="text-sm font-medium text-gray-300 mb-1 block">Select Asset Type</label>
+        <select
+          className={selectClass}
+          value={selectedAssetType}
+          onChange={(event) => setSelectedAssetType(event.target.value)}
+        >
+          <option value="">Select an asset type...</option>
+          {ASSET_TYPE_OPTIONS.map((opt) => (
+            <option key={opt.label} value={opt.label}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
       </section>
 
-      {/* Section C: Categorization */}
+      {/* Categorization */}
       <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
         <h2 className="text-xl font-semibold text-white mb-4">Categorization</h2>
 
         <div className="space-y-6">
-          {/* Resource Type, Industries & Solutions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-6">
-            <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-3">Resource Type</h3>
-              <ReadOnlyFieldWithCopy label="Parameter Name" value="resourceType" />
-              <ReadOnlyFieldWithCopy label="Name" value="Resource type" />
-
-              <div>
-                <label className="text-sm font-medium text-gray-300 mb-1 block">Resource Type</label>
-                <select
-                  className={selectClass}
-                  value={selectedResourceType}
-                  onChange={(event) => setSelectedResourceType(event.target.value)}
-                >
-                  <option value="">Select a resource type...</option>
-                  <optgroup label="Standard">
-                    {RESOURCE_TYPE_STANDARD.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </optgroup>
-                  <optgroup label="Video">
-                    {RESOURCE_TYPE_VIDEO.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </optgroup>
-                </select>
-              </div>
-            </div>
-
+          {/* Industries & Solutions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
               <h3 className="text-lg font-semibold text-white mb-3">Industries</h3>
-              <ReadOnlyFieldWithCopy label="Parameter Name" value="industries" />
-              <ReadOnlyFieldWithCopy label="Name" value="Industries" />
-
               <CategoryGroup
                 options={INDUSTRIES}
                 checkedValues={checkedIndustries}
@@ -213,9 +158,6 @@ export default function ResourceCenterIndexCardPage() {
 
             <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
               <h3 className="text-lg font-semibold text-white mb-3">Solutions</h3>
-              <ReadOnlyFieldWithCopy label="Parameter Name" value="solutions" />
-              <ReadOnlyFieldWithCopy label="Name" value="Solutions" />
-
               <CategoryGroup
                 options={SOLUTIONS}
                 checkedValues={checkedSolutions}
@@ -228,10 +170,8 @@ export default function ResourceCenterIndexCardPage() {
           {/* Category */}
           <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
             <h3 className="text-lg font-semibold text-white mb-3">Category</h3>
-            <ReadOnlyFieldWithCopy label="Parameter Name" value="product" />
-            <ReadOnlyFieldWithCopy label="Name" value="Category/product" />
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {CATEGORY_GROUPS.map((group) => (
                 <div
                   key={group.subtitle}
@@ -276,7 +216,7 @@ export default function ResourceCenterIndexCardPage() {
           <h2 className="text-xl font-semibold text-white mb-4">Results</h2>
 
           <div className="space-y-4">
-            {/* Top results: Targeting URL, Text for URL */}
+            {/* Targeting URL */}
             {generatedResults
               .filter((g) => !g.param)
               .map((group) => (
@@ -299,9 +239,16 @@ export default function ResourceCenterIndexCardPage() {
                         {group.section}
                         <span className="ml-2 text-xs font-normal text-gray-400">({group.param})</span>
                       </h3>
+                      <ReadOnlyFieldWithCopy label="Parameter Name" value={group.param} />
+                      <ReadOnlyFieldWithCopy label="Name" value={group.name} />
                       {group.values.map((val) => (
                         <ReadOnlyFieldWithCopy key={val} value={val} />
                       ))}
+                      {group.extra
+                        ? group.extra.map((e) => (
+                            <ReadOnlyFieldWithCopy key={e.label} label={e.label} value={e.value} />
+                          ))
+                        : null}
                     </div>
                   ))}
               </div>
