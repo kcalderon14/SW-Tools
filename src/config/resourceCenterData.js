@@ -152,7 +152,6 @@ export const INDUSTRIES = [
   'Education',
   'Enterprise',
   'Finance',
-  'Government',
   'Government/Public Sector',
   'Healthcare',
   'Marketing',

@@ -83,17 +83,13 @@ export default function ResourceCenterIndexCardPage() {
     }
 
     // Industries
-    const industryResults = INDUSTRIES.filter((opt) => checkedIndustries.has(opt)).map(
-      (opt) => 'Industries\\' + opt
-    );
+    const industryResults = INDUSTRIES.filter((opt) => checkedIndustries.has(opt));
     if (industryResults.length > 0) {
       results.push({ section: 'Industries', param: 'industries', name: 'Industries', values: industryResults });
     }
 
     // Solutions
-    const solutionResults = SOLUTIONS.filter((opt) => checkedSolutions.has(opt)).map(
-      (opt) => 'Solutions\\' + opt
-    );
+    const solutionResults = SOLUTIONS.filter((opt) => checkedSolutions.has(opt));
     if (solutionResults.length > 0) {
       results.push({ section: 'Solutions', param: 'solutions', name: 'Solutions', values: solutionResults });
     }
