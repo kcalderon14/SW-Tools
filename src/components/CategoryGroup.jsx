@@ -10,7 +10,7 @@ export default function CategoryGroup({ subtitle, options, checkedValues, onTogg
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        {subtitle ? <h4 className="text-sm font-semibold text-gray-200">{subtitle}</h4> : <span />}
+        {subtitle ? <h4 className="text-sm font-semibold text-text-primary">{subtitle}</h4> : <span />}
         {onSetAll ? (
           <button
             type="button"
@@ -24,7 +24,7 @@ export default function CategoryGroup({ subtitle, options, checkedValues, onTogg
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
         {options.map((option) => (
-          <label key={option} className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+          <label key={option} className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
             <input
               type="checkbox"
               className="accent-teal"

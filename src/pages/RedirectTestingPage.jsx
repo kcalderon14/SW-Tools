@@ -19,7 +19,7 @@ export default function RedirectTestingPage() {
   const { results, progress, isTesting, totalCount, startTest, cancelTest, clearResults } = useRedirectTester();
 
   const textareaClass =
-    'bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full font-mono text-sm focus:border-teal focus:outline-none resize-none';
+    'bg-bg-surface text-text-primary border border-border-light rounded px-3 py-2 w-full font-mono text-sm focus:border-teal focus:outline-none resize-none';
   const buttonClass =
     'bg-teal hover:bg-teal-hover text-white font-bold px-6 py-3 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
@@ -116,13 +116,13 @@ export default function RedirectTestingPage() {
   return (
     <div className="space-y-6">
       <header className="border-b-2 border-teal pb-3">
-        <h1 className="text-3xl font-bold text-white">Redirect Testing</h1>
+        <h1 className="text-3xl font-bold text-text-primary">Redirect Testing</h1>
       </header>
 
-      <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
+      <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4">
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
+          <div className="bg-bg-surface border border-border rounded-lg p-4">
+            <label className="text-sm font-medium text-text-secondary mb-2 block">
               From URLs ({fromLines.length} {fromLines.length === 1 ? 'URL' : 'URLs'})
             </label>
             <textarea
@@ -144,16 +144,16 @@ export default function RedirectTestingPage() {
                 }}
                 disabled={isTesting}
               />
-              <span className="text-sm text-gray-300">Test all LOC versions</span>
+              <span className="text-sm text-text-secondary">Test all LOC versions</span>
             </label>
             {locExpandFrom && (
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-text-muted">
                 Each EN URL will be expanded to test /de/, /es/, /fr/, /ja/, /ko/, /pt/, /zh/ versions.
               </p>
             )}
           </div>
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4">
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
+          <div className="bg-bg-surface border border-border rounded-lg p-4">
+            <label className="text-sm font-medium text-text-secondary mb-2 block">
               Expected To URLs ({toLines.length} {toLines.length === 1 ? 'URL' : 'URLs'})
             </label>
             <textarea
@@ -172,29 +172,29 @@ export default function RedirectTestingPage() {
                 onChange={(e) => setLocExpandTo(e.target.checked)}
                 disabled={isTesting || !locExpandFrom}
               />
-              <span className={`text-sm ${!locExpandFrom ? 'text-gray-500' : 'text-gray-300'}`}>
+              <span className={`text-sm ${!locExpandFrom ? 'text-text-muted' : 'text-text-secondary'}`}>
                 Expand Expected URLs to LOC versions
               </span>
             </label>
             {locExpandTo && locExpandFrom && (
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-text-muted">
                 Each LOC From URL will be matched to its corresponding LOC Expected URL.
               </p>
             )}
             {!locExpandFrom && (
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-text-muted">
                 Enable "Test all LOC versions" on From URLs first.
               </p>
             )}
           </div>
         </div>
 
-        <div className="mt-4 bg-dark-surface border border-gray-700 rounded-lg p-4">
-          <label className="text-sm font-medium text-gray-300 mb-2 block">
+        <div className="mt-4 bg-bg-surface border border-border rounded-lg p-4">
+          <label className="text-sm font-medium text-text-secondary mb-2 block">
             Test Environment
           </label>
           <select
-            className="bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full focus:border-teal focus:outline-none"
+            className="bg-bg-surface text-text-primary border border-border-light rounded px-3 py-2 w-full focus:border-teal focus:outline-none"
             value={stagingIp}
             onChange={(e) => setStagingIp(e.target.value)}
             disabled={isTesting}
@@ -210,10 +210,10 @@ export default function RedirectTestingPage() {
                 <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal">
                   Auto-resolve
                 </span>
-                <span className="text-xs text-gray-400 font-mono">{STAGING_HOSTNAME}</span>
+                <span className="text-xs text-text-muted font-mono">{STAGING_HOSTNAME}</span>
               </div>
               {resolvedIp && (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-text-muted">
                   Last resolved IP: <span className="text-teal font-mono">{resolvedIp}</span>
                 </p>
               )}
@@ -221,7 +221,7 @@ export default function RedirectTestingPage() {
                 <p className="text-xs text-error">{resolveError}</p>
               )}
               {isResolving && (
-                <p className="text-xs text-gray-400">Resolving DNS...</p>
+                <p className="text-xs text-text-muted">Resolving DNS...</p>
               )}
             </div>
           )}
@@ -229,10 +229,10 @@ export default function RedirectTestingPage() {
           {stagingIp === 'custom' && (
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Server IP</label>
+                <label className="text-xs text-text-muted mb-1 block">Server IP</label>
                 <input
                   type="text"
-                  className="bg-dark-bg text-white border border-gray-600 rounded px-3 py-2 w-full text-sm focus:border-teal focus:outline-none"
+                  className="bg-bg-primary text-text-primary border border-border-light rounded px-3 py-2 w-full text-sm focus:border-teal focus:outline-none"
                   placeholder="e.g. 23.50.51.34"
                   value={customIp}
                   onChange={(e) => setCustomIp(e.target.value)}
@@ -240,10 +240,10 @@ export default function RedirectTestingPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Domain (optional note)</label>
+                <label className="text-xs text-text-muted mb-1 block">Domain (optional note)</label>
                 <input
                   type="text"
-                  className="bg-dark-bg text-white border border-gray-600 rounded px-3 py-2 w-full text-sm focus:border-teal focus:outline-none"
+                  className="bg-bg-primary text-text-primary border border-border-light rounded px-3 py-2 w-full text-sm focus:border-teal focus:outline-none"
                   placeholder="e.g. www.solarwinds.com"
                   value={customDomain}
                   onChange={(e) => setCustomDomain(e.target.value)}
@@ -258,7 +258,7 @@ export default function RedirectTestingPage() {
         </div>
 
         {mismatch && (
-          <div className="mt-3 rounded bg-dark-surface border border-error px-4 py-2 text-sm text-error">
+          <div className="mt-3 rounded bg-bg-surface border border-error px-4 py-2 text-sm text-error">
             Warning: From URLs ({fromLines.length}) and To URLs ({toLines.length}) have different counts. Extra entries will be marked as unmatched.
           </div>
         )}
@@ -278,7 +278,7 @@ export default function RedirectTestingPage() {
           )}
           <button
             type="button"
-            className="bg-gray-700 hover:bg-gray-600 text-white font-bold px-6 py-3 rounded transition-colors"
+            className="bg-bg-primary hover:bg-gray-600 text-white font-bold px-6 py-3 rounded transition-colors"
             onClick={handleClear}
             disabled={isTesting}
           >
@@ -288,27 +288,27 @@ export default function RedirectTestingPage() {
       </section>
 
       {isTesting && (
-        <section className="bg-dark-bg border border-gray-700 rounded-lg p-4">
+        <section className="bg-bg-primary border border-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">Testing redirects...</span>
+            <span className="text-sm font-medium text-text-secondary">Testing redirects...</span>
             <span className="text-sm font-semibold text-teal">{progress}%</span>
           </div>
-          <div className="w-full bg-dark-surface rounded-full h-4 overflow-hidden">
+          <div className="w-full bg-bg-surface rounded-full h-4 overflow-hidden">
             <div
               className="bg-teal h-4 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="mt-2 text-xs text-gray-400">
+          <p className="mt-2 text-xs text-text-muted">
             {results.length} of {totalCount} URLs tested
           </p>
         </section>
       )}
 
       {results.length > 0 && !isTesting && (
-        <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6 space-y-4">
+        <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Results</h2>
+            <h2 className="text-lg font-semibold text-text-primary">Results</h2>
             <div className="flex items-center gap-4">
               <div className="flex gap-4 text-sm">
                 <span className="text-success font-semibold">{passCount} passed</span>
@@ -316,7 +316,7 @@ export default function RedirectTestingPage() {
               </div>
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors"
+                className="inline-flex items-center gap-1.5 bg-bg-primary hover:bg-gray-600 text-white text-sm font-medium px-3 py-1.5 rounded transition-colors"
                 onClick={handleCopyForJira}
               >
                 {copied ? (
@@ -343,7 +343,7 @@ export default function RedirectTestingPage() {
               <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal">
                 Server IP
               </span>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-text-muted">
                 Tested against <span className="text-teal font-mono">{resolvedIp}</span> (resolved from {STAGING_HOSTNAME})
               </span>
             </div>
@@ -353,14 +353,14 @@ export default function RedirectTestingPage() {
       )}
 
       {results.length > 0 && isTesting && (
-        <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-white">Results (in progress...)</h2>
+        <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-text-primary">Results (in progress...)</h2>
           {resolvedIp && (
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal">
                 Server IP
               </span>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-text-muted">
                 Tested against <span className="text-teal font-mono">{resolvedIp}</span> (resolved from {STAGING_HOSTNAME})
               </span>
             </div>

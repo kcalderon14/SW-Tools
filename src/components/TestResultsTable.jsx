@@ -1,14 +1,14 @@
 export default function TestResultsTable({ results }) {
   if (!results || results.length === 0) return null;
 
-  const thClass = 'px-4 py-2 text-center border-r border-gray-600 last:border-r-0 text-sm font-semibold';
-  const tdClass = 'px-4 py-2 border-r border-gray-600 last:border-r-0 text-sm';
+  const thClass = 'px-4 py-2 text-center border-r border-border-light last:border-r-0 text-sm font-semibold';
+  const tdClass = 'px-4 py-2 border-r border-border-light last:border-r-0 text-sm';
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-dark-surface">
+          <tr className="bg-bg-surface">
             <th className={thClass}>#</th>
             <th className={thClass}>LOC</th>
             <th className={thClass}>From</th>
@@ -22,7 +22,7 @@ export default function TestResultsTable({ results }) {
           {results.map((r) => (
             <tr
               key={r.index}
-              className={`${r.index % 2 === 0 ? 'bg-dark-surface' : 'bg-dark-bg'}`}
+              className={`${r.index % 2 === 0 ? 'bg-bg-surface' : 'bg-bg-primary'}`}
             >
               <td className={`${tdClass} text-center w-12`}>{r.index}</td>
               <td className={`${tdClass} text-center`}>
@@ -31,7 +31,7 @@ export default function TestResultsTable({ results }) {
                     {r.loc.toUpperCase()}
                   </span>
                 ) : (
-                  <span className="text-gray-500">—</span>
+                  <span className="text-text-muted">—</span>
                 )}
               </td>
               <td className={`${tdClass} break-all max-w-48`}>{r.from}</td>
@@ -50,14 +50,14 @@ export default function TestResultsTable({ results }) {
                       r.statusCode >= 300 && r.statusCode < 400
                         ? 'text-teal font-semibold'
                         : r.statusCode >= 200 && r.statusCode < 300
-                          ? 'text-gray-300'
+                          ? 'text-text-secondary'
                           : 'text-error font-semibold'
                     }
                   >
                     {r.statusCode}
                   </span>
                 ) : (
-                  <span className="text-gray-500">—</span>
+                  <span className="text-text-muted">—</span>
                 )}
               </td>
               <td className={`${tdClass} text-center border-r-0`}>

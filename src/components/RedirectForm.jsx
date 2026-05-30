@@ -11,12 +11,12 @@ export default function RedirectForm({ formData, onChange }) {
     }
   };
 
-  const inputClass = 'bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
+  const inputClass = 'bg-bg-surface text-text-primary border border-border-light rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
 
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-1 block">Description</label>
+        <label className="text-sm font-medium text-text-secondary mb-1 block">Description</label>
         <input
           type="text"
           className={inputClass}
@@ -28,7 +28,7 @@ export default function RedirectForm({ formData, onChange }) {
         />
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-1 block">Domain</label>
+        <label className="text-sm font-medium text-text-secondary mb-1 block">Domain</label>
         <select
           ref={domainRef}
           className={inputClass}
@@ -41,7 +41,7 @@ export default function RedirectForm({ formData, onChange }) {
         </select>
       </div>
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-1 block">Redirect Type</label>
+        <label className="text-sm font-medium text-text-secondary mb-1 block">Redirect Type</label>
         <select
           className={inputClass}
           value={formData.statusCode}
@@ -63,7 +63,7 @@ export default function RedirectForm({ formData, onChange }) {
         </select>
       </div>
       <div>
-        <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
           <input
             type="checkbox"
             checked={formData.langValidation}
