@@ -1,6 +1,5 @@
 import { testRedirect } from './redirectProxy.js';
 import { resolveDns } from './dnsResolver.js';
-import { getSession, saveSession } from './pokerStore.js';
 
 export default function redirectTestPlugin() {
   return {
@@ -93,55 +92,6 @@ export default function redirectTestPlugin() {
         });
       });
 
-      server.middlewares.use((req, res, next) => {
-        const match = req.url.match(/^\/api\/poker\/session\/([^/?]+)/);
-        if (!match || req.method !== 'GET') return next();
-
-        const sessionId = match[1];
-        const session = getSession(sessionId);
-        if (!session) {
-          res.writeHead(404, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Session not found' }));
-          return;
-        }
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(session));
-      });
-
-      server.middlewares.use('/api/poker/session', (req, res, next) => {
-        if (req.method !== 'POST') return next();
-
-        let body = '';
-        let bodySize = 0;
-        const MAX_BODY = 1024 * 1024;
-        req.on('data', (chunk) => {
-          bodySize += chunk.length;
-          if (bodySize > MAX_BODY) {
-            req.destroy();
-            res.writeHead(413, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Request body too large' }));
-            return;
-          }
-          body += chunk;
-        });
-
-        req.on('end', () => {
-          try {
-            const session = JSON.parse(body);
-            if (!session || !session.id) {
-              res.writeHead(400, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ error: 'Invalid session data' }));
-              return;
-            }
-            saveSession(session.id, session);
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ ok: true }));
-          } catch {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Invalid request body' }));
-          }
-        });
-      });
     },
   };
 }

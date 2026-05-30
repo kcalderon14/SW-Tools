@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { ref, set, onValue, off } from 'firebase/database';
+import { db } from '../config/firebase';
 import { createSession as createSessionModel } from '../models/PokerSession';
 import { generateSessionId } from '../utils/pokerSession';
 import { DEFAULT_VOTE_VALUES, HOURS_VOTE_VALUES, ESTIMATION_MODES } from '../config/pokerConfig';
@@ -9,26 +11,8 @@ function getUserKey(sessionId) {
   return USER_KEY_PREFIX + sessionId;
 }
 
-async function fetchSession(sessionId) {
-  try {
-    const res = await fetch(`/api/poker/session/${sessionId}`);
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-async function persistSession(session) {
-  try {
-    await fetch('/api/poker/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(session),
-    });
-  } catch (e) {
-    console.error('Failed to persist session:', e);
-  }
+function getSessionRef(sessionId) {
+  return ref(db, `poker-sessions/${sessionId}`);
 }
 
 export function usePokerSession(sessionId) {
@@ -38,42 +22,40 @@ export function usePokerSession(sessionId) {
     return localStorage.getItem(getUserKey(sessionId));
   });
   const [loading, setLoading] = useState(true);
-  const pollRef = useRef(null);
 
-  // Load session from API on mount and poll for updates
+  // Real-time listener for session data
   useEffect(() => {
     if (!sessionId) {
       setLoading(false);
       return;
     }
 
-    let mounted = true;
+    const sessionRef = getSessionRef(sessionId);
 
-    const load = async () => {
-      const data = await fetchSession(sessionId);
-      if (mounted) {
-        setSession(data);
-        setLoading(false);
-      }
-    };
-
-    load();
-
-    // Poll every 2 seconds for updates from other users
-    pollRef.current = setInterval(async () => {
-      const data = await fetchSession(sessionId);
-      if (mounted && data) {
-        setSession(data);
-      }
-    }, 2000);
+    onValue(sessionRef, (snapshot) => {
+      const data = snapshot.val();
+      setSession(data);
+      setLoading(false);
+    }, (error) => {
+      console.error('Firebase read error:', error);
+      setLoading(false);
+    });
 
     return () => {
-      mounted = false;
-      if (pollRef.current) clearInterval(pollRef.current);
+      off(sessionRef);
     };
   }, [sessionId]);
 
   const isPM = session ? currentUser === session.pm : false;
+
+  const persistSession = useCallback(async (updatedSession) => {
+    if (!updatedSession || !updatedSession.id) return;
+    try {
+      await set(getSessionRef(updatedSession.id), updatedSession);
+    } catch (e) {
+      console.error('Firebase write error:', e);
+    }
+  }, []);
 
   const createNewSession = useCallback((teamName, userName) => {
     const id = sessionId || generateSessionId();
@@ -83,9 +65,9 @@ export function usePokerSession(sessionId) {
     localStorage.setItem(getUserKey(id), userName);
     persistSession(newSession);
     return newSession;
-  }, [sessionId]);
+  }, [sessionId, persistSession]);
 
-  const joinSession = useCallback(async (userName, role) => {
+  const joinSession = useCallback((userName, role) => {
     if (!session) return;
     const existingParticipant = session.participants.find(p => p.name === userName);
     let updated;
@@ -100,10 +82,10 @@ export function usePokerSession(sessionId) {
     setSession(updated);
     setCurrentUser(userName);
     localStorage.setItem(getUserKey(session.id), userName);
-    await persistSession(updated);
-  }, [session]);
+    persistSession(updated);
+  }, [session, persistSession]);
 
-  const castVote = useCallback(async (value, regressionFlag) => {
+  const castVote = useCallback((value, regressionFlag) => {
     if (!session || !currentUser) return;
     const updated = {
       ...session,
@@ -111,74 +93,64 @@ export function usePokerSession(sessionId) {
         ...session.currentRound,
         votes: { ...session.currentRound.votes, [currentUser]: value },
         regressionFlags: regressionFlag !== undefined
-          ? { ...session.currentRound.regressionFlags, [currentUser]: regressionFlag }
-          : session.currentRound.regressionFlags,
+          ? { ...(session.currentRound.regressionFlags || {}), [currentUser]: regressionFlag }
+          : (session.currentRound.regressionFlags || {}),
       },
     };
     setSession(updated);
-    await persistSession(updated);
-  }, [session, currentUser]);
+    persistSession(updated);
+  }, [session, currentUser, persistSession]);
 
-  const revealVotes = useCallback(async () => {
+  const revealVotes = useCallback(() => {
     if (!session) return;
     const updated = {
       ...session,
       currentRound: { ...session.currentRound, state: 'revealed' },
     };
     setSession(updated);
-    await persistSession(updated);
-  }, [session]);
+    persistSession(updated);
+  }, [session, persistSession]);
 
-  const resetVotes = useCallback(async () => {
+  const resetVotes = useCallback(() => {
     if (!session) return;
     const updated = {
       ...session,
       currentRound: { votes: {}, regressionFlags: {}, state: 'voting' },
     };
     setSession(updated);
-    await persistSession(updated);
-  }, [session]);
+    persistSession(updated);
+  }, [session, persistSession]);
 
-  const nextRound = useCallback(async () => {
+  const nextRound = useCallback(() => {
     if (!session) return;
     const updated = {
       ...session,
-      roundHistory: [...session.roundHistory, session.currentRound],
+      roundHistory: [...(session.roundHistory || []), session.currentRound],
       currentRound: { votes: {}, regressionFlags: {}, state: 'voting' },
     };
     setSession(updated);
-    await persistSession(updated);
-  }, [session]);
+    persistSession(updated);
+  }, [session, persistSession]);
 
-  const setVoteValues = useCallback(async (values) => {
+  const setVoteValues = useCallback((values) => {
     if (!session) return;
     const updated = { ...session, voteValues: values };
     setSession(updated);
-    await persistSession(updated);
-  }, [session]);
+    persistSession(updated);
+  }, [session, persistSession]);
 
-  const setEstimationMode = useCallback(async (mode) => {
+  const setEstimationMode = useCallback((mode) => {
     if (!session) return;
-
-    const nextVoteValues = mode === ESTIMATION_MODES.HOURS
-      ? HOURS_VOTE_VALUES
-      : DEFAULT_VOTE_VALUES;
-
+    const newValues = mode === ESTIMATION_MODES.HOURS ? HOURS_VOTE_VALUES : DEFAULT_VOTE_VALUES;
     const updated = {
       ...session,
       estimationMode: mode,
-      voteValues: nextVoteValues,
-      currentRound: {
-        ...session.currentRound,
-        votes: {},
-        regressionFlags: {},
-        state: 'voting',
-      },
+      voteValues: newValues,
+      currentRound: { votes: {}, regressionFlags: {}, state: 'voting' },
     };
-
     setSession(updated);
-    await persistSession(updated);
-  }, [session]);
+    persistSession(updated);
+  }, [session, persistSession]);
 
   return {
     session,

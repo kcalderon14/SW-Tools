@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ref, set } from 'firebase/database';
+import { db } from '../config/firebase';
 import CreateSessionModal from '../components/poker/CreateSessionModal';
 import { createSession } from '../models/PokerSession';
 import { generateSessionId } from '../utils/pokerSession';
-
-function userStorageKey(sessionId) {
-  return `poker-user-${sessionId}`;
-}
 
 export default function PointPokerPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -24,12 +22,8 @@ export default function PointPokerPage() {
       sessionId,
     });
 
-    await fetch('/api/poker/session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(session),
-    });
-    localStorage.setItem(userStorageKey(sessionId), userName);
+    await set(ref(db, `poker-sessions/${sessionId}`), session);
+    localStorage.setItem(`poker-user-${sessionId}`, userName);
 
     setIsCreateModalOpen(false);
     navigate(`/Point-Poker/${sessionId}`);

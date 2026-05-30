@@ -29,3 +29,6 @@ App/
 
 # GitHub workflows
 .github/
+
+# Task implementation docs (local AI context only)
+Task Implementations/
