@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { generateListHtml } from '../utils/listGenerator';
 
 const inputClass =
-  'bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
+  'bg-bg-surface text-text-primary border border-border-light rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
 const buttonClass =
   'bg-teal hover:bg-teal-hover text-white font-bold px-6 py-3 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
@@ -50,11 +50,11 @@ export default function ListGeneratorPage() {
   return (
     <div className="space-y-6">
       <header className="border-b-2 border-teal pb-3">
-        <h1 className="text-3xl font-bold text-white">HTML Helpers</h1>
+        <h1 className="text-3xl font-bold text-text-primary">HTML Helpers</h1>
       </header>
 
-      <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">List Generator</h2>
+      <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">List Generator</h2>
 
         <div className="flex flex-wrap gap-2">
           <button
@@ -63,7 +63,7 @@ export default function ListGeneratorPage() {
             className={`px-4 py-2 rounded transition-colors ${
               listType === 'ul'
                 ? 'bg-teal text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-bg-primary text-text-secondary hover:bg-gray-600'
             }`}
           >
             Unordered List (&lt;ul&gt;)
@@ -74,7 +74,7 @@ export default function ListGeneratorPage() {
             className={`px-4 py-2 rounded transition-colors ${
               listType === 'ol'
                 ? 'bg-teal text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-bg-primary text-text-secondary hover:bg-gray-600'
             }`}
           >
             Ordered List (&lt;ol&gt;)
@@ -82,8 +82,8 @@ export default function ListGeneratorPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mt-6">
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-            <label className="text-sm font-medium text-gray-300 mb-1 block">
+          <div className="bg-bg-surface border border-border rounded-lg p-4 space-y-4">
+            <label className="text-sm font-medium text-text-secondary mb-1 block">
               List Items (one per line, indent with spaces for sub-items)
             </label>
             <textarea
@@ -94,11 +94,11 @@ export default function ListGeneratorPage() {
             />
           </div>
 
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-            <p className="text-sm font-medium text-gray-300 mb-2">Configuration</p>
+          <div className="bg-bg-surface border border-border rounded-lg p-4 space-y-4">
+            <p className="text-sm font-medium text-text-secondary mb-2">Configuration</p>
 
             <div>
-              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   className="accent-teal"
@@ -119,7 +119,7 @@ export default function ListGeneratorPage() {
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   className="accent-teal"
@@ -169,9 +169,9 @@ export default function ListGeneratorPage() {
       </section>
 
       {generatedHtml && (
-        <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Generated HTML</h2>
-          <div className="bg-dark-surface rounded-lg p-4 overflow-x-auto">
+        <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-4">Generated HTML</h2>
+          <div className="bg-bg-surface rounded-lg p-4 overflow-x-auto">
             <code className="text-teal font-mono text-sm whitespace-pre-wrap break-all">{generatedHtml}</code>
           </div>
         </section>

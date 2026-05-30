@@ -11,15 +11,15 @@ export default function LocalizationModal({ isOpen, locText, hasLanguages, onCon
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={onDismiss}>
-      <div className="bg-dark-surface rounded-lg p-6 w-[65%] max-h-[80vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
-        <h4 className="text-lg font-semibold text-white mb-4">
+      <div className="bg-bg-surface rounded-lg p-6 w-[65%] max-h-[80vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+        <h4 className="text-lg font-semibold text-text-primary mb-4">
           {hasLanguages ? 'Generate localized URLs' : 'Selected site has no localized versions'}
         </h4>
         <div>
-          <label className="text-sm text-gray-300 mb-1 block">URLs:</label>
+          <label className="text-sm text-text-secondary mb-1 block">URLs:</label>
           <textarea
             rows={10}
-            className="bg-dark-bg text-white border border-gray-600 rounded px-3 py-2 w-full font-mono text-sm focus:border-teal focus:outline-none resize-none mb-4"
+            className="bg-bg-primary text-text-primary border border-border-light rounded px-3 py-2 w-full font-mono text-sm focus:border-teal focus:outline-none resize-none mb-4"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />

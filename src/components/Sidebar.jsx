@@ -1,17 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
-function DashboardIcon() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <rect x="3" y="3" width="7" height="7" />
-      <rect x="14" y="3" width="7" height="7" />
-      <rect x="3" y="14" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" />
-    </svg>
-  );
-}
-
 function RedirectsIcon() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -62,15 +51,6 @@ function ListGeneratorIcon() {
   );
 }
 
-function SettingsIcon() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.24.5.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.27.39-1.51 1z" />
-    </svg>
-  );
-}
-
 function BuilderIcon() {
   return (
     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -90,10 +70,20 @@ function IndexCardIcon() {
   );
 }
 
+function PokerIcon() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <rect x="2" y="4" width="10" height="14" rx="1" transform="rotate(-5 7 11)" />
+      <rect x="12" y="4" width="10" height="14" rx="1" transform="rotate(5 17 11)" />
+      <text x="7" y="13" fontSize="6" fill="currentColor" stroke="none" textAnchor="middle">♠</text>
+    </svg>
+  );
+}
+
 function NavItemLink({ to, icon, label, isCollapsed }) {
   const baseClasses = 'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full';
   const activeClasses = 'border-l-4 border-teal text-teal bg-dark-bg';
-  const defaultClasses = 'text-gray-300 hover:bg-dark-bg';
+  const defaultClasses = 'text-text-secondary hover:bg-bg-primary';
 
   return (
     <NavLink
@@ -107,23 +97,6 @@ function NavItemLink({ to, icon, label, isCollapsed }) {
       {icon}
       {!isCollapsed && <span>{label}</span>}
     </NavLink>
-  );
-}
-
-function NavItemDisabled({ icon, label, isCollapsed }) {
-  const baseClasses = 'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full';
-  const disabledClasses = 'text-gray-500 cursor-not-allowed';
-
-  return (
-    <button
-      type="button"
-      className={`${baseClasses} ${disabledClasses} ${isCollapsed ? 'justify-center px-2' : 'justify-start'}`}
-      disabled
-      title={isCollapsed ? label : undefined}
-    >
-      {icon}
-      {!isCollapsed && <span>{label}</span>}
-    </button>
   );
 }
 
@@ -141,7 +114,7 @@ function NavGroup({ icon, label, isCollapsed, children, defaultOpen, basePath })
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full ${
-          isChildActive ? 'text-teal' : 'text-gray-300 hover:bg-dark-bg'
+          isChildActive ? 'text-teal' : 'text-text-secondary hover:bg-bg-primary'
         } ${isCollapsed ? 'justify-center px-2' : 'justify-start'}`}
         title={isCollapsed ? label : undefined}
       >
@@ -163,7 +136,7 @@ function NavGroup({ icon, label, isCollapsed, children, defaultOpen, basePath })
         )}
       </button>
       {isOpen && !isCollapsed && (
-        <div className="ml-4 mt-1 space-y-1 border-l border-gray-700 pl-3">
+        <div className="ml-4 mt-1 space-y-1 border-l border-border pl-3">
           {children}
         </div>
       )}
@@ -171,7 +144,7 @@ function NavGroup({ icon, label, isCollapsed, children, defaultOpen, basePath })
   );
 }
 
-export default function Sidebar({ isCollapsed, onToggle }) {
+export default function Sidebar({ isCollapsed, onToggle, theme, onThemeToggle }) {
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const collapsed = typeof isCollapsed === 'boolean' ? isCollapsed : internalCollapsed;
 
@@ -185,9 +158,7 @@ export default function Sidebar({ isCollapsed, onToggle }) {
 
   return (
     <aside
-      className={`bg-dark-surface border-r border-gray-800 transition-all duration-200 ${
-        collapsed ? 'w-20' : 'w-64'
-      }`}
+      className={`bg-bg-surface border-r border-border transition-all duration-200 ${collapsed ? 'w-20' : 'w-64'}`}
     >
       <div className="flex h-full flex-col p-3">
         <button
@@ -202,7 +173,6 @@ export default function Sidebar({ isCollapsed, onToggle }) {
         </button>
 
         <nav className="space-y-2">
-          <NavItemDisabled icon={<DashboardIcon />} label="Dashboard" isCollapsed={collapsed} />
           <NavGroup icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} basePath="/redirects">
             <NavItemLink to="/redirects" icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} />
             <NavItemLink to="/redirects/testing" icon={<TestingIcon />} label="Redirect Testing" isCollapsed={collapsed} />
@@ -214,7 +184,28 @@ export default function Sidebar({ isCollapsed, onToggle }) {
           <NavGroup icon={<BuilderIcon />} label="Builder" isCollapsed={collapsed} basePath="/builder">
             <NavItemLink to="/builder/resource-center-index-card" icon={<IndexCardIcon />} label="RC Index Card" isCollapsed={collapsed} />
           </NavGroup>
-          <NavItemDisabled icon={<SettingsIcon />} label="Settings" isCollapsed={collapsed} />
+          <NavItemLink to="/Point-Poker" icon={<PokerIcon />} label="Point Poker" isCollapsed={collapsed} />
+
+          <div className="mt-4 border-t border-border pt-4">
+            <button
+              type="button"
+              onClick={onThemeToggle}
+              className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full ${collapsed ? 'justify-center px-2' : 'justify-start'} text-text-secondary hover:bg-bg-primary`}
+              title={collapsed ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : undefined}
+            >
+              {theme === 'dark' ? (
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="5" />
+                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )}
+              {!collapsed && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+            </button>
+          </div>
         </nav>
       </div>
     </aside>

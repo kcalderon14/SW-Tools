@@ -3,11 +3,22 @@
 @theme {
   --color-dark-bg: #121212;
   --color-dark-surface: #292929;
+  --color-light-bg: #f5f5f5;
+  --color-light-surface: #ffffff;
   --color-teal: #017374;
   --color-teal-hover: #0b8d8f;
   --color-error: #ff0000;
   --color-success: #22c55e;
   --font-sans: "Open Sans", "Roboto", sans-serif;
+
+  --color-bg-primary: var(--color-dark-bg);
+  --color-bg-surface: var(--color-dark-surface);
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #d1d5db;
+  --color-text-muted: #9ca3af;
+  --color-border: #374151;
+  --color-border-light: #4b5563;
+  --color-input-bg: var(--color-dark-bg);
 }
 
 @layer base {
@@ -16,9 +27,29 @@
   }
 
   body {
+    font-family: var(--font-sans);
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  html.dark body {
     background-color: var(--color-dark-bg);
     color: #ffffff;
-    font-family: var(--font-sans);
+  }
+
+  html:not(.dark) body {
+    background-color: var(--color-light-bg);
+    color: #1f2937;
+  }
+
+  html:not(.dark) {
+    --color-bg-primary: #f5f5f5;
+    --color-bg-surface: #ffffff;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #4b5563;
+    --color-text-muted: #6b7280;
+    --color-border: #e5e7eb;
+    --color-border-light: #d1d5db;
+    --color-input-bg: #ffffff;
   }
 
   header, footer {

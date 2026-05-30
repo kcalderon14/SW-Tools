@@ -81,15 +81,15 @@ export default function RedirectsPage() {
   return (
     <div className="space-y-6">
       <header className="border-b-2 border-teal pb-3">
-        <h1 className="text-3xl font-bold text-white">Redirects</h1>
+        <h1 className="text-3xl font-bold text-text-primary">Redirects</h1>
       </header>
 
-      <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
+      <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4">
+          <div className="bg-bg-surface border border-border rounded-lg p-4">
             <RedirectForm formData={formData} onChange={handleFormChange} />
           </div>
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4">
+          <div className="bg-bg-surface border border-border rounded-lg p-4">
             <UrlTextareas
               fromUrls={fromUrls}
               toUrls={toUrls}
@@ -107,7 +107,7 @@ export default function RedirectsPage() {
           </button>
           <button
             type="button"
-            className="bg-gray-700 hover:bg-gray-600 text-white font-bold px-6 py-3 rounded transition-colors"
+            className="bg-bg-primary hover:bg-gray-600 text-white font-bold px-6 py-3 rounded transition-colors"
             onClick={clearAll}
           >
             Clear
@@ -116,7 +116,7 @@ export default function RedirectsPage() {
       </section>
 
       {redirect && redirect.info.length > 0 && (
-        <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6 space-y-4">
+        <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6 space-y-4">
           <ResultTable
             redirectInfo={redirect.info}
             onUpdateType={updateRedirectType}

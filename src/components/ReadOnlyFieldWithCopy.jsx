@@ -16,14 +16,14 @@ export default function ReadOnlyFieldWithCopy({ label, value, className }) {
 
   return (
     <div className={className}>
-      {label ? <label className="text-sm font-medium text-gray-300 mb-1 block">{label}</label> : null}
+      {label ? <label className="text-sm font-medium text-text-secondary mb-1 block">{label}</label> : null}
 
       <div className="flex items-stretch min-w-0">
         <input
           type="text"
           readOnly
           value={value}
-          className="bg-gray-800 text-white border-none rounded-l px-3 py-2 flex-1 min-w-0 outline-none cursor-default"
+          className="bg-bg-primary text-text-primary border-none rounded-l px-3 py-2 flex-1 min-w-0 outline-none cursor-default"
         />
 
         {hasValue ? (
@@ -31,7 +31,7 @@ export default function ReadOnlyFieldWithCopy({ label, value, className }) {
             type="button"
             onClick={handleCopy}
             disabled={!hasValue}
-            className="bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white px-3 py-2 rounded-r transition-colors"
+            className="bg-bg-primary hover:bg-gray-600 text-text-secondary hover:text-white px-3 py-2 rounded-r transition-colors"
             aria-label={copied ? 'Copied' : 'Copy to clipboard'}
           >
             {copied ? (

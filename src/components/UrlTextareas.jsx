@@ -1,7 +1,7 @@
 import { formatFromUrls, formatToUrls } from '../utils/urlFormatter';
 
 export default function UrlTextareas({ fromUrls, toUrls, domain, onFromChange, onToChange, onOpenLocModal }) {
-  const textareaClass = 'bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full font-mono text-sm focus:border-teal focus:outline-none resize-none';
+  const textareaClass = 'bg-bg-surface text-text-primary border border-border-light rounded px-3 py-2 w-full font-mono text-sm focus:border-teal focus:outline-none resize-none';
 
   const getRows = (text) => Math.max(10, text.split('\n').length);
 
@@ -21,7 +21,7 @@ export default function UrlTextareas({ fromUrls, toUrls, domain, onFromChange, o
     <button
       type="button"
       onClick={onClick}
-      className="ml-2 text-gray-400 hover:text-teal transition-colors"
+      className="ml-2 text-text-muted hover:text-teal transition-colors"
       title="Generate localized versions"
     >
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor">
@@ -34,7 +34,7 @@ export default function UrlTextareas({ fromUrls, toUrls, domain, onFromChange, o
     <div className="space-y-4">
       <div>
         <div className="flex items-center mb-1">
-          <label className="text-sm font-medium text-gray-300">From</label>
+          <label className="text-sm font-medium text-text-secondary">From</label>
           <InfoIcon onClick={() => onOpenLocModal('from')} />
         </div>
         <textarea
@@ -48,7 +48,7 @@ export default function UrlTextareas({ fromUrls, toUrls, domain, onFromChange, o
       </div>
       <div>
         <div className="flex items-center mb-1">
-          <label className="text-sm font-medium text-gray-300">To</label>
+          <label className="text-sm font-medium text-text-secondary">To</label>
           <InfoIcon onClick={() => onOpenLocModal('to')} />
         </div>
         <textarea

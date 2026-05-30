@@ -10,7 +10,7 @@ import {
 } from '../config/resourceCenterData';
 
 const selectClass =
-  'bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
+  'bg-bg-surface text-text-primary border border-border-light rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
 
 export default function ResourceCenterIndexCardPage() {
   const [selectedAssetType, setSelectedAssetType] = useState('');
@@ -114,13 +114,13 @@ export default function ResourceCenterIndexCardPage() {
   return (
     <div className="space-y-6">
       <header className="border-b-2 border-teal pb-3">
-        <h1 className="text-3xl font-bold text-white">Builder</h1>
+        <h1 className="text-3xl font-bold text-text-primary">Builder</h1>
       </header>
 
       {/* Asset Type Selection */}
-      <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Asset Type</h2>
-        <label className="text-sm font-medium text-gray-300 mb-1 block">Select Asset Type</label>
+      <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Asset Type</h2>
+        <label className="text-sm font-medium text-text-secondary mb-1 block">Select Asset Type</label>
         <select
           className={selectClass}
           value={selectedAssetType}
@@ -136,14 +136,14 @@ export default function ResourceCenterIndexCardPage() {
       </section>
 
       {/* Categorization */}
-      <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Categorization</h2>
+      <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Categorization</h2>
 
         <div className="space-y-6">
           {/* Industries & Solutions */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-3">Industries</h3>
+            <div className="bg-bg-surface border border-border rounded-lg p-4 space-y-4">
+              <h3 className="text-lg font-semibold text-text-primary mb-3">Industries</h3>
               <CategoryGroup
                 options={INDUSTRIES}
                 checkedValues={checkedIndustries}
@@ -152,8 +152,8 @@ export default function ResourceCenterIndexCardPage() {
               />
             </div>
 
-            <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-              <h3 className="text-lg font-semibold text-white mb-3">Solutions</h3>
+            <div className="bg-bg-surface border border-border rounded-lg p-4 space-y-4">
+              <h3 className="text-lg font-semibold text-text-primary mb-3">Solutions</h3>
               <CategoryGroup
                 options={SOLUTIONS}
                 checkedValues={checkedSolutions}
@@ -164,14 +164,14 @@ export default function ResourceCenterIndexCardPage() {
           </div>
 
           {/* Category */}
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-            <h3 className="text-lg font-semibold text-white mb-3">Category</h3>
+          <div className="bg-bg-surface border border-border rounded-lg p-4 space-y-4">
+            <h3 className="text-lg font-semibold text-text-primary mb-3">Category</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {CATEGORY_GROUPS.map((group) => (
                 <div
                   key={group.subtitle}
-                  className="border border-gray-600 rounded-lg p-3 overflow-hidden"
+                  className="border border-border-light rounded-lg p-3 overflow-hidden"
                 >
                   <CategoryGroup
                     subtitle={group.subtitle}
@@ -208,15 +208,15 @@ export default function ResourceCenterIndexCardPage() {
 
       {/* Results Section */}
       {generatedResults && generatedResults.length > 0 ? (
-        <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Results</h2>
+        <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-4">Results</h2>
 
           <div className="space-y-4">
             {/* Targeting URL */}
             {generatedResults
               .filter((g) => !g.param)
               .map((group) => (
-                <div key={group.section} className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-3">
+                <div key={group.section} className="bg-bg-surface border border-border rounded-lg p-4 space-y-3">
                   <h3 className="text-sm font-semibold text-gray-200">{group.section}</h3>
                   {group.values.map((val) => (
                     <ReadOnlyFieldWithCopy key={val} value={val} />
@@ -230,10 +230,10 @@ export default function ResourceCenterIndexCardPage() {
                 {generatedResults
                   .filter((g) => g.param)
                   .map((group) => (
-                    <div key={group.section} className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-3">
+                    <div key={group.section} className="bg-bg-surface border border-border rounded-lg p-4 space-y-3">
                       <h3 className="text-sm font-semibold text-gray-200">
                         {group.section}
-                        <span className="ml-2 text-xs font-normal text-gray-400">({group.param})</span>
+                        <span className="ml-2 text-xs font-normal text-text-muted">({group.param})</span>
                       </h3>
                       <ReadOnlyFieldWithCopy label="Parameter Name" value={group.param} />
                       <ReadOnlyFieldWithCopy label="Name" value={group.name} />

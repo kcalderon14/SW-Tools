@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 
 const inputClass =
-  'bg-dark-surface text-white border border-gray-600 rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
+  'bg-bg-surface text-text-primary border border-border-light rounded px-3 py-2 w-full focus:border-teal focus:outline-none';
 const buttonClass =
   'bg-teal hover:bg-teal-hover text-white font-bold px-6 py-3 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
@@ -120,11 +120,11 @@ export default function HtmlHelpersPage() {
   return (
     <div className="space-y-6">
       <header className="border-b-2 border-teal pb-3">
-        <h1 className="text-3xl font-bold text-white">HTML Helpers</h1>
+        <h1 className="text-3xl font-bold text-text-primary">HTML Helpers</h1>
       </header>
 
-      <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">Link Builder</h2>
+      <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Link Builder</h2>
 
         <div className="flex flex-wrap gap-2">
           <button
@@ -133,7 +133,7 @@ export default function HtmlHelpersPage() {
             className={`px-4 py-2 rounded transition-colors ${
               linkType === 'standard'
                 ? 'bg-teal text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-bg-primary text-text-secondary hover:bg-gray-600'
             }`}
           >
             Standard Link
@@ -144,7 +144,7 @@ export default function HtmlHelpersPage() {
             className={`px-4 py-2 rounded transition-colors ${
               linkType === 'phone'
                 ? 'bg-teal text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-bg-primary text-text-secondary hover:bg-gray-600'
             }`}
           >
             Phone Number
@@ -155,7 +155,7 @@ export default function HtmlHelpersPage() {
             className={`px-4 py-2 rounded transition-colors ${
               linkType === 'email'
                 ? 'bg-teal text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-bg-primary text-text-secondary hover:bg-gray-600'
             }`}
           >
             Email
@@ -163,9 +163,9 @@ export default function HtmlHelpersPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mt-6">
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
+          <div className="bg-bg-surface border border-border rounded-lg p-4 space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-1 block">Anchor Text *</label>
+              <label className="text-sm font-medium text-text-secondary mb-1 block">Anchor Text *</label>
               <input
                 type="text"
                 className={inputClass}
@@ -176,7 +176,7 @@ export default function HtmlHelpersPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-1 block">{hrefFieldConfig.label}</label>
+              <label className="text-sm font-medium text-text-secondary mb-1 block">{hrefFieldConfig.label}</label>
               <input
                 type={hrefFieldConfig.type}
                 className={inputClass}
@@ -188,7 +188,7 @@ export default function HtmlHelpersPage() {
 
             {linkType === 'email' && (
               <div>
-                <label className="text-sm font-medium text-gray-300 mb-1 block">Subject (optional)</label>
+                <label className="text-sm font-medium text-text-secondary mb-1 block">Subject (optional)</label>
                 <input
                   type="text"
                   className={inputClass}
@@ -200,7 +200,7 @@ export default function HtmlHelpersPage() {
             )}
 
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-1 block">Target</label>
+              <label className="text-sm font-medium text-text-secondary mb-1 block">Target</label>
               <select
                 className={inputClass}
                 value={newTab ? '_blank' : ''}
@@ -212,10 +212,10 @@ export default function HtmlHelpersPage() {
             </div>
           </div>
 
-          <div className="bg-dark-surface border border-gray-700 rounded-lg p-4 space-y-4">
-            <p className="text-sm font-medium text-gray-300 mb-2">Data Attributes</p>
+          <div className="bg-bg-surface border border-border rounded-lg p-4 space-y-4">
+            <p className="text-sm font-medium text-text-secondary mb-2">Data Attributes</p>
 
-            <div className="flex items-center gap-2 text-sm text-gray-400">
+            <div className="flex items-center gap-2 text-sm text-text-muted">
               <span className="inline-flex items-center rounded bg-teal/20 px-2 py-1 text-xs font-medium text-teal">
                 Auto
               </span>
@@ -223,7 +223,7 @@ export default function HtmlHelpersPage() {
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   className="accent-teal"
@@ -244,7 +244,7 @@ export default function HtmlHelpersPage() {
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   className="accent-teal"
@@ -254,14 +254,14 @@ export default function HtmlHelpersPage() {
                 Add data-linkdetail
               </label>
               {enableLinkdetail && (
-                <div className="text-xs text-gray-400 mt-1 bg-dark-bg rounded px-3 py-2">
+                  <div className="text-xs text-text-muted mt-1 bg-bg-primary rounded px-3 py-2">
                   Value: "{anchorText} embed" (auto-generated)
                 </div>
               )}
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   className="accent-teal"
@@ -303,9 +303,9 @@ export default function HtmlHelpersPage() {
       </section>
 
       {generatedHtml && (
-        <section className="bg-dark-bg border border-gray-700 rounded-lg p-4 md:p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Generated HTML</h2>
-          <div className="bg-dark-surface rounded-lg p-4 overflow-x-auto">
+        <section className="bg-bg-primary border border-border rounded-lg p-4 md:p-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-4">Generated HTML</h2>
+          <div className="bg-bg-surface rounded-lg p-4 overflow-x-auto">
             <code className="text-teal font-mono text-sm whitespace-pre-wrap break-all">{generatedHtml}</code>
           </div>
         </section>
