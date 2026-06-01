@@ -72,6 +72,15 @@ export default function PointPokerSessionPage() {
     }
   }, [session?.currentRound?.state]);
 
+  useEffect(() => {
+    if (session?.currentRound?.votes && currentUser) {
+      const existingVote = session.currentRound.votes[currentUser];
+      if (existingVote !== undefined && session.currentRound.state === 'voting') {
+        setSelectedVote(existingVote);
+      }
+    }
+  }, [session?.currentRound?.votes, currentUser, session?.currentRound?.state]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -186,10 +195,10 @@ export default function PointPokerSessionPage() {
                 values={session.voteValues}
                 selectedValue={selectedVote}
                 onVote={handleVote}
-                disabled={isRevealed || hasVoted}
+                disabled={isRevealed}
               />
               {hasVoted && !isRevealed && (
-                <p className="text-sm text-text-secondary">Your vote is in. Waiting for reveal.</p>
+                <p className="text-sm text-text-secondary">Your vote is in. You can change it until votes are revealed.</p>
               )}
             </section>
           )}

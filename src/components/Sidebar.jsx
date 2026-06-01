@@ -145,6 +145,8 @@ function NavGroup({ icon, label, isCollapsed, children, defaultOpen, basePath })
 }
 
 export default function Sidebar({ isCollapsed, onToggle, theme, onThemeToggle }) {
+  const location = useLocation();
+  const isPokerRoute = location.pathname.startsWith('/Point-Poker');
   const [internalCollapsed, setInternalCollapsed] = useState(false);
   const collapsed = typeof isCollapsed === 'boolean' ? isCollapsed : internalCollapsed;
 
@@ -173,18 +175,31 @@ export default function Sidebar({ isCollapsed, onToggle, theme, onThemeToggle })
         </button>
 
         <nav className="space-y-2">
-          <NavGroup icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} basePath="/redirects">
-            <NavItemLink to="/redirects" icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} />
-            <NavItemLink to="/redirects/testing" icon={<TestingIcon />} label="Redirect Testing" isCollapsed={collapsed} />
-          </NavGroup>
-          <NavGroup icon={<HtmlHelpersIcon />} label="HTML Helpers" isCollapsed={collapsed} basePath="/html-helpers">
-            <NavItemLink to="/html-helpers/link-builder" icon={<LinkBuilderIcon />} label="Link Builder" isCollapsed={collapsed} />
-            <NavItemLink to="/html-helpers/list-generator" icon={<ListGeneratorIcon />} label="List Generator" isCollapsed={collapsed} />
-          </NavGroup>
-          <NavGroup icon={<BuilderIcon />} label="Builder" isCollapsed={collapsed} basePath="/builder">
-            <NavItemLink to="/builder/resource-center-index-card" icon={<IndexCardIcon />} label="RC Index Card" isCollapsed={collapsed} />
-          </NavGroup>
-          <NavItemLink to="/Point-Poker" icon={<PokerIcon />} label="Point Poker" isCollapsed={collapsed} />
+          {!isPokerRoute && (
+            <>
+              <NavGroup icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} basePath="/redirects">
+                <NavItemLink to="/redirects" icon={<RedirectsIcon />} label="Redirects" isCollapsed={collapsed} />
+                <NavItemLink to="/redirects/testing" icon={<TestingIcon />} label="Redirect Testing" isCollapsed={collapsed} />
+              </NavGroup>
+              <NavGroup icon={<HtmlHelpersIcon />} label="HTML Helpers" isCollapsed={collapsed} basePath="/html-helpers">
+                <NavItemLink to="/html-helpers/link-builder" icon={<LinkBuilderIcon />} label="Link Builder" isCollapsed={collapsed} />
+                <NavItemLink to="/html-helpers/list-generator" icon={<ListGeneratorIcon />} label="List Generator" isCollapsed={collapsed} />
+              </NavGroup>
+              <NavGroup icon={<BuilderIcon />} label="Builder" isCollapsed={collapsed} basePath="/builder">
+                <NavItemLink to="/builder/resource-center-index-card" icon={<IndexCardIcon />} label="RC Index Card" isCollapsed={collapsed} />
+              </NavGroup>
+              <a
+                href="/Point-Poker"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full text-text-secondary hover:bg-bg-primary ${collapsed ? 'justify-center px-2' : 'justify-start'}`}
+                title={collapsed ? 'Point Poker' : undefined}
+              >
+                <PokerIcon />
+                {!collapsed && <span>Point Poker</span>}
+              </a>
+            </>
+          )}
 
           <div className="mt-4 border-t border-border pt-4">
             <button
