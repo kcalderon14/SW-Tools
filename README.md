@@ -6,6 +6,7 @@ A React application for generating Akamai redirect CSV files and testing redirec
 
 - **Redirect Generator** — Configure domain, status codes, and URL mappings to produce downloadable Akamai-format CSV files. Supports multi-policy routing for localized and path-specific redirects.
 - **Redirect Tester** — Paste From/To URL lists and verify that redirects resolve correctly, with a live progress bar and pass/fail results table.
+- **Point Poker** — Real-time planning poker for estimating story points or hours. PM creates a session with a shareable URL; team members join as DEV, QA, or Observer. Features include configurable vote values, coffee skip option, vote averages, pie chart distribution, consensus celebration GIFs, and kick/rejoin participant management. Powered by Firebase Realtime Database.
 
 ## Tech Stack
 
@@ -61,6 +62,13 @@ server/
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT`   | `3001`  | Production server port |
+| `VITE_FIREBASE_API_KEY` | — | Firebase API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | — | Firebase auth domain |
+| `VITE_FIREBASE_DATABASE_URL` | — | Firebase Realtime Database URL |
+| `VITE_FIREBASE_PROJECT_ID` | — | Firebase project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | — | Firebase storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | — | Firebase messaging sender ID |
+| `VITE_FIREBASE_APP_ID` | — | Firebase app ID |
 
 ## Scripts
 

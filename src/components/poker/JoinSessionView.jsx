@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ROLES } from '../../config/pokerConfig';
 
 export default function JoinSessionView({ onJoin }) {
   const [userName, setUserName] = useState('');
@@ -52,17 +53,24 @@ export default function JoinSessionView({ onJoin }) {
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setRole('QA')}
-                className={`px-4 py-2 rounded border font-semibold transition-colors ${roleButtonClass('QA')}`}
+                onClick={() => setRole(ROLES.QA)}
+                className={`px-4 py-2 rounded border font-semibold transition-colors ${roleButtonClass(ROLES.QA)}`}
               >
                 QA
               </button>
               <button
                 type="button"
-                onClick={() => setRole('DEV')}
-                className={`px-4 py-2 rounded border font-semibold transition-colors ${roleButtonClass('DEV')}`}
+                onClick={() => setRole(ROLES.DEV)}
+                className={`px-4 py-2 rounded border font-semibold transition-colors ${roleButtonClass(ROLES.DEV)}`}
               >
                 DEV
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole(ROLES.OBSERVER)}
+                className={`px-4 py-2 rounded border font-semibold transition-colors ${roleButtonClass(ROLES.OBSERVER)}`}
+              >
+                Observer
               </button>
             </div>
           </div>

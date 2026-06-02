@@ -6,6 +6,74 @@ const getVoteLabel = (participantId, votes) => {
   return null;
 };
 
+const formatVote = (vote) => {
+  if (vote === '☕') {
+    return '☕ Skipped';
+  }
+
+  return vote;
+};
+
+const CHART_COLORS = ['#14b8a6', '#3b82f6', '#a855f7', '#f59e0b', '#22c55e', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#f97316'];
+
+const parseNumericVote = (vote) => {
+  if (typeof vote === 'number' && Number.isFinite(vote)) {
+    return vote;
+  }
+
+  if (typeof vote !== 'string') {
+    return null;
+  }
+
+  const trimmedVote = vote.trim();
+  if (!trimmedVote || !/^-?\d+(\.\d+)?$/.test(trimmedVote)) {
+    return null;
+  }
+
+  const parsedVote = Number(trimmedVote);
+  return Number.isFinite(parsedVote) ? parsedVote : null;
+};
+
+const getAverageLabel = (participants, votes) => {
+  const numericVotes = participants
+    .map((participant) => parseNumericVote(getVoteLabel(participant.name, votes)))
+    .filter((vote) => vote !== null);
+
+  if (numericVotes.length === 0) {
+    return 'N/A';
+  }
+
+  const total = numericVotes.reduce((sum, vote) => sum + vote, 0);
+  return (total / numericVotes.length).toFixed(1);
+};
+
+const getDistributionLabel = (voteValue) => {
+  if (voteValue === '☕') {
+    return 'Skipped';
+  }
+
+  if (voteValue === '?') {
+    return 'Uncertain';
+  }
+
+  return voteValue;
+};
+
+function polarToCartesian(cx, cy, radius, angleInDegrees) {
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180;
+  return {
+    x: cx + radius * Math.cos(angleInRadians),
+    y: cy + radius * Math.sin(angleInRadians),
+  };
+}
+
+function describeArc(cx, cy, radius, startAngle, endAngle) {
+  const start = polarToCartesian(cx, cy, radius, endAngle);
+  const end = polarToCartesian(cx, cy, radius, startAngle);
+  const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+  return `M ${cx} ${cy} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y} Z`;
+}
+
 function CheckIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-green-400" aria-hidden="true">
@@ -36,7 +104,7 @@ function VoteRow({ participant, vote, showRegression, regressionFlags }) {
       <div className="flex items-center justify-between gap-3">
         <p className="font-semibold text-text-primary">{participant.name}</p>
         <p className="text-sm text-text-secondary">
-          {vote === null ? 'Did not vote' : `Vote: ${vote}`}
+          {vote === null ? 'Did not vote' : `Vote: ${formatVote(vote)}`}
         </p>
       </div>
 
@@ -51,6 +119,8 @@ function VoteRow({ participant, vote, showRegression, regressionFlags }) {
 }
 
 function RoleSection({ title, participants, votes, showRegression, regressionFlags }) {
+  const averageLabel = getAverageLabel(participants, votes);
+
   return (
     <section className="bg-bg-surface rounded-lg p-4">
       <h3 className="text-lg font-bold text-text-primary mb-3">{title}</h3>
@@ -70,6 +140,53 @@ function RoleSection({ title, participants, votes, showRegression, regressionFla
           ))}
         </ul>
       )}
+
+      <p className="mt-3 text-sm text-text-muted">Average: {averageLabel}</p>
+    </section>
+  );
+}
+
+function VoteDistribution({ entries, totalVotes }) {
+  const cx = 80;
+  const cy = 80;
+  const radius = 70;
+  const hasSingleValue = entries.length === 1;
+  let currentAngle = 0;
+
+  return (
+    <section className="bg-bg-surface rounded-lg p-4 md:col-span-2">
+      <h3 className="text-lg font-bold text-text-primary mb-3">Vote Distribution</h3>
+
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+        <div className="mx-auto lg:mx-0 shrink-0">
+          <svg viewBox="0 0 160 160" className="w-48 h-48" role="img" aria-label="Vote distribution pie chart">
+            {hasSingleValue ? (
+              <circle cx={cx} cy={cy} r={radius} fill={entries[0].color} />
+            ) : (
+              entries.map((entry) => {
+                const angle = (entry.count / totalVotes) * 360;
+                const startAngle = currentAngle;
+                const endAngle = currentAngle + angle;
+                currentAngle = endAngle;
+
+                return <path key={`slice-${entry.value}`} d={describeArc(cx, cy, radius, startAngle, endAngle)} fill={entry.color} />;
+              })
+            )}
+          </svg>
+        </div>
+
+        <ul className="space-y-2 text-sm text-text-secondary w-full">
+          {entries.map((entry) => (
+            <li key={`legend-${entry.value}`} className="flex items-center justify-between gap-4 border border-border rounded px-3 py-2 bg-bg-primary">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: entry.color }} aria-hidden="true" />
+                <span className="text-text-primary truncate">{getDistributionLabel(entry.value)}</span>
+              </div>
+              <span className="text-text-muted">{entry.count}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
@@ -77,24 +194,48 @@ function RoleSection({ title, participants, votes, showRegression, regressionFla
 export default function VoteResults({ participants = [], votes = {}, regressionFlags = {} }) {
   const qaParticipants = participants.filter((participant) => participant.role === 'QA');
   const devParticipants = participants.filter((participant) => participant.role === 'DEV');
+  const chartParticipants = [...qaParticipants, ...devParticipants];
+
+  const voteCounts = chartParticipants.reduce((acc, participant) => {
+    const vote = getVoteLabel(participant.name, votes);
+    if (vote === null || vote === undefined) {
+      return acc;
+    }
+
+    const key = String(vote);
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
+  const distributionEntries = Object.entries(voteCounts).map(([value, count], index) => ({
+    value,
+    count,
+    color: CHART_COLORS[index % CHART_COLORS.length],
+  }));
+
+  const totalVotes = distributionEntries.reduce((sum, entry) => sum + entry.count, 0);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <RoleSection
-        title="QA Votes"
-        participants={qaParticipants}
-        votes={votes}
-        showRegression
-        regressionFlags={regressionFlags}
-      />
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <RoleSection
+          title="QA Votes"
+          participants={qaParticipants}
+          votes={votes}
+          showRegression
+          regressionFlags={regressionFlags}
+        />
 
-      <RoleSection
-        title="DEV Votes"
-        participants={devParticipants}
-        votes={votes}
-        showRegression={false}
-        regressionFlags={regressionFlags}
-      />
+        <RoleSection
+          title="DEV Votes"
+          participants={devParticipants}
+          votes={votes}
+          showRegression={false}
+          regressionFlags={regressionFlags}
+        />
+      </div>
+
+      {totalVotes > 0 && <VoteDistribution entries={distributionEntries} totalVotes={totalVotes} />}
     </div>
   );
 }

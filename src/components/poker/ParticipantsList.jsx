@@ -14,13 +14,21 @@ const roleBadgeClass = {
   PM: 'bg-teal/20 text-teal border border-teal/40',
   DEV: 'bg-blue-500/20 text-blue-300 border border-blue-400/40',
   QA: 'bg-purple-500/20 text-purple-300 border border-purple-400/40',
+  Observer: 'bg-amber-500/20 text-amber-300 border border-amber-400/40',
 };
 
 const hasVoted = (participantId, votes) => {
   return votes && Object.prototype.hasOwnProperty.call(votes, participantId);
 };
 
-export default function ParticipantsList({ participants = [], votes = {}, isRevealed }) {
+export default function ParticipantsList({
+  participants = [],
+  votes = {},
+  isRevealed,
+  canControl = false,
+  onKick,
+  currentUser = null,
+}) {
   return (
     <section className="bg-bg-surface rounded-lg p-4">
       <h3 className="text-lg font-bold text-text-primary mb-3">Participants</h3>
@@ -32,6 +40,8 @@ export default function ParticipantsList({ participants = [], votes = {}, isReve
           {participants.map((participant) => {
             const voted = hasVoted(participant.name, votes);
             const voteValue = votes[participant.name];
+            const isObserver = participant.role === 'Observer';
+            const canKickParticipant = canControl && participant.role !== 'PM' && participant.name !== currentUser;
 
             return (
               <li
@@ -55,11 +65,27 @@ export default function ParticipantsList({ participants = [], votes = {}, isReve
                   )}
                 </div>
 
-                <div className="shrink-0">
+                <div className="shrink-0 flex items-center gap-2">
                   {voted ? (
                     <StatusCheckIcon />
+                  ) : isRevealed || isObserver || participant.role === 'PM' ? (
+                    <span className="text-sm text-text-muted">-</span>
                   ) : (
                     <span className="text-sm text-text-muted">Waiting...</span>
+                  )}
+
+                  {canKickParticipant && (
+                    <button
+                      type="button"
+                      onClick={() => onKick?.(participant.name)}
+                      className="inline-flex items-center justify-center w-6 h-6 rounded border border-red-500/40 text-red-400 hover:bg-red-500/10 hover:border-red-400 transition-colors"
+                      aria-label={`Remove ${participant.name}`}
+                      title={`Remove ${participant.name}`}
+                    >
+                      <svg viewBox="0 0 20 20" fill="none" className="w-3.5 h-3.5" aria-hidden="true">
+                        <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </button>
                   )}
                 </div>
               </li>

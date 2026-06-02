@@ -3,7 +3,7 @@ import { ref, set, onValue, off } from 'firebase/database';
 import { db } from '../config/firebase';
 import { createSession as createSessionModel } from '../models/PokerSession';
 import { generateSessionId } from '../utils/pokerSession';
-import { DEFAULT_VOTE_VALUES, HOURS_VOTE_VALUES, ESTIMATION_MODES } from '../config/pokerConfig';
+import { DEFAULT_VOTE_VALUES, HOURS_VOTE_VALUES, ESTIMATION_MODES, ROLES } from '../config/pokerConfig';
 
 const USER_KEY_PREFIX = 'poker-user-';
 
@@ -47,6 +47,9 @@ export function usePokerSession(sessionId) {
   }, [sessionId]);
 
   const isPM = session ? currentUser === session.pm : false;
+  const currentParticipant = session?.participants?.find((participant) => participant.name === currentUser);
+  const isObserver = currentParticipant?.role === ROLES.OBSERVER;
+  const canControl = isPM || isObserver;
 
   const persistSession = useCallback(async (updatedSession) => {
     if (!updatedSession || !updatedSession.id) return;
@@ -111,16 +114,6 @@ export function usePokerSession(sessionId) {
     persistSession(updated);
   }, [session, persistSession]);
 
-  const resetVotes = useCallback(() => {
-    if (!session) return;
-    const updated = {
-      ...session,
-      currentRound: { votes: {}, regressionFlags: {}, state: 'voting' },
-    };
-    setSession(updated);
-    persistSession(updated);
-  }, [session, persistSession]);
-
   const nextRound = useCallback(() => {
     if (!session) return;
     const updated = {
@@ -152,6 +145,34 @@ export function usePokerSession(sessionId) {
     persistSession(updated);
   }, [session, persistSession]);
 
+  const kickParticipant = useCallback((participantName) => {
+    if (!session || !participantName) return;
+    if (participantName === session.pm) return;
+
+    const updatedParticipants = (session.participants || []).filter(
+      (participant) => participant.name !== participantName,
+    );
+
+    if (updatedParticipants.length === (session.participants || []).length) return;
+
+    const currentRound = session.currentRound || { votes: {}, regressionFlags: {}, state: 'voting' };
+    const { [participantName]: _removedVote, ...remainingVotes } = currentRound.votes || {};
+    const { [participantName]: _removedRegressionFlag, ...remainingRegressionFlags } = currentRound.regressionFlags || {};
+
+    const updated = {
+      ...session,
+      participants: updatedParticipants,
+      currentRound: {
+        ...currentRound,
+        votes: remainingVotes,
+        regressionFlags: remainingRegressionFlags,
+      },
+    };
+
+    setSession(updated);
+    persistSession(updated);
+  }, [session, persistSession]);
+
   return {
     session,
     currentUser,
@@ -161,10 +182,12 @@ export function usePokerSession(sessionId) {
     joinSession,
     castVote,
     revealVotes,
-    resetVotes,
     nextRound,
     setVoteValues,
     setEstimationMode,
+    kickParticipant,
     isPM,
+    isObserver,
+    canControl,
   };
 }

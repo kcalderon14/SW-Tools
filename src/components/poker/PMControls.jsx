@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DEFAULT_VOTE_VALUES, HOURS_VOTE_VALUES } from '../../config/pokerConfig';
 
 export default function PMControls({
   estimationMode,
@@ -6,34 +7,55 @@ export default function PMControls({
   currentValues,
   onSetValues,
   onReveal,
-  onReset,
   onNextRound,
   votesCount,
   isRevealed,
 }) {
   const [isEditingValues, setIsEditingValues] = useState(false);
-  const [valuesInput, setValuesInput] = useState((currentValues || []).join(', '));
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [customInput, setCustomInput] = useState('');
 
   const revealDisabled = votesCount === 0 || isRevealed;
   const storyPointsActive = estimationMode !== 'hours';
+  const defaultValues = storyPointsActive ? DEFAULT_VOTE_VALUES : HOURS_VOTE_VALUES;
+  const displayedEditValues = [
+    ...defaultValues,
+    ...selectedValues.filter((value) => !defaultValues.includes(value)),
+  ];
 
   const handleSaveValues = () => {
-    const parsedValues = valuesInput
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .map((item) => {
-        const numericValue = Number(item);
-        return Number.isNaN(numericValue) ? item : numericValue;
-      });
-
-    onSetValues(parsedValues);
+    onSetValues(selectedValues);
+    setCustomInput('');
     setIsEditingValues(false);
   };
 
   const handleStartEditing = () => {
-    setValuesInput((currentValues || []).join(', '));
+    setSelectedValues([...(currentValues || [])]);
+    setCustomInput('');
     setIsEditingValues(true);
+  };
+
+  const handleToggleValue = (value) => {
+    setSelectedValues((previousValues) =>
+      previousValues.includes(value)
+        ? previousValues.filter((item) => item !== value)
+        : [...previousValues, value],
+    );
+  };
+
+  const handleAddCustomValue = () => {
+    const trimmedValue = customInput.trim();
+    if (!trimmedValue) {
+      return;
+    }
+
+    const numericValue = Number(trimmedValue);
+    const parsedValue = Number.isNaN(numericValue) ? trimmedValue : numericValue;
+
+    setSelectedValues((previousValues) =>
+      previousValues.includes(parsedValue) ? previousValues : [...previousValues, parsedValue],
+    );
+    setCustomInput('');
   };
 
   return (
@@ -81,13 +103,50 @@ export default function PMControls({
         </div>
 
         {isEditingValues && (
-          <div className="space-y-2">
-            <input
-              type="text"
-              value={valuesInput}
-              onChange={(event) => setValuesInput(event.target.value)}
-              className="bg-bg-primary text-text-primary border border-border-light rounded px-3 py-2 w-full focus:border-teal focus:outline-none"
-            />
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {displayedEditValues.map((value) => {
+                const isSelected = selectedValues.includes(value);
+
+                return (
+                  <button
+                    key={String(value)}
+                    type="button"
+                    onClick={() => handleToggleValue(value)}
+                    className={`min-w-[50px] h-[50px] px-3 rounded-lg border font-bold transition-colors ${
+                      isSelected
+                        ? 'bg-teal border-teal text-white'
+                        : 'bg-bg-primary border-border-light text-text-muted opacity-50 hover:opacity-80'
+                    }`}
+                  >
+                    {String(value)}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="text"
+                value={customInput}
+                onChange={(event) => setCustomInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleAddCustomValue();
+                  }
+                }}
+                placeholder="Add custom value"
+                className="bg-bg-primary text-text-primary border border-border-light rounded px-3 py-2 w-full sm:w-auto sm:min-w-[180px] focus:border-teal focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleAddCustomValue}
+                className="text-white text-sm font-bold px-3 py-2 rounded transition-colors bg-teal hover:bg-teal-hover"
+              >
+                Add
+              </button>
+            </div>
 
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -99,14 +158,17 @@ export default function PMControls({
               </button>
               <button
                 type="button"
-                onClick={() => onSetValues(null)}
+                onClick={() => setSelectedValues([...defaultValues])}
                 className="text-white text-sm font-bold px-3 py-1 rounded transition-colors bg-gray-600 hover:bg-gray-700"
               >
                 Reset to Default
               </button>
               <button
                 type="button"
-                onClick={() => setIsEditingValues(false)}
+                onClick={() => {
+                  setCustomInput('');
+                  setIsEditingValues(false);
+                }}
                 className="text-sm font-semibold text-text-muted hover:text-text-secondary transition-colors"
               >
                 Cancel
@@ -124,14 +186,6 @@ export default function PMControls({
           className="text-white font-bold px-4 py-2 rounded transition-colors bg-teal hover:bg-teal-hover disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Reveal Votes
-        </button>
-
-        <button
-          type="button"
-          onClick={onReset}
-          className="text-white font-bold px-4 py-2 rounded transition-colors bg-red-600 hover:bg-red-700"
-        >
-          Reset Votes
         </button>
 
         {isRevealed && (

@@ -28,12 +28,24 @@ function getRandomGif() {
   return CONSENSUS_GIFS[Math.floor(Math.random() * CONSENSUS_GIFS.length)];
 }
 
-function checkDevConsensus(participants, votes) {
-  const devs = participants.filter((p) => p.role === 'DEV');
-  const votedDevs = devs.filter((p) => votes[p.name] !== undefined);
-  if (votedDevs.length < 2) return false;
-  const firstVote = votes[votedDevs[0].name];
-  return votedDevs.every((p) => votes[p.name] === firstVote);
+function checkConsensus(participants, votes) {
+  const devVotes = participants
+    .filter((p) => p.role === 'DEV' && votes[p.name] !== undefined)
+    .map((p) => votes[p.name])
+    .filter((vote) => vote !== '☕');
+
+  const qaVotes = participants
+    .filter((p) => p.role === 'QA' && votes[p.name] !== undefined)
+    .map((p) => votes[p.name])
+    .filter((vote) => vote !== '☕');
+
+  const hasEnoughDevVoters = devVotes.length >= 2;
+  const hasEnoughQaVoters = qaVotes.length >= 2;
+
+  const devConsensus = !hasEnoughDevVoters || devVotes.every((vote) => vote === devVotes[0]);
+  const qaConsensus = !hasEnoughQaVoters || qaVotes.every((vote) => vote === qaVotes[0]);
+
+  return (hasEnoughDevVoters || hasEnoughQaVoters) && devConsensus && qaConsensus;
 }
 
 export default function PointPokerSessionPage() {
@@ -43,16 +55,19 @@ export default function PointPokerSessionPage() {
   const {
     session,
     currentUser,
+    setCurrentUser,
     loading,
     createSession,
     joinSession,
     castVote,
     revealVotes,
-    resetVotes,
     nextRound,
     setVoteValues,
     setEstimationMode,
+    kickParticipant,
     isPM,
+    isObserver,
+    canControl,
   } = usePokerSession(sessionId);
 
   const [selectedVote, setSelectedVote] = useState(null);
@@ -73,13 +88,27 @@ export default function PointPokerSessionPage() {
   }, [session?.currentRound?.state]);
 
   useEffect(() => {
-    if (session?.currentRound?.votes && currentUser) {
-      const existingVote = session.currentRound.votes[currentUser];
+    if (session?.currentRound && currentUser) {
+      const votes = session.currentRound.votes || {};
+      const existingVote = votes[currentUser];
       if (existingVote !== undefined && session.currentRound.state === 'voting') {
         setSelectedVote(existingVote);
+      } else if (session.currentRound.state === 'voting') {
+        setSelectedVote(null);
       }
     }
   }, [session?.currentRound?.votes, currentUser, session?.currentRound?.state]);
+
+  useEffect(() => {
+    if (!session || !currentUser) return;
+
+    const isParticipant = (session.participants || []).some((participant) => participant.name === currentUser);
+    if (isParticipant) return;
+
+    localStorage.removeItem(`poker-user-${sessionId}`);
+    setCurrentUser(null);
+    setSelectedVote(null);
+  }, [session, currentUser, sessionId, setCurrentUser]);
 
   if (loading) {
     return (
@@ -111,14 +140,20 @@ export default function PointPokerSessionPage() {
     joinSession(userName, role);
   };
 
+  const isCurrentUserParticipant = (session.participants || []).some((participant) => participant.name === currentUser);
+
   if (!currentUser) {
+    return <JoinSessionView onJoin={handleJoin} />;
+  }
+
+  if (!isCurrentUserParticipant) {
     return <JoinSessionView onJoin={handleJoin} />;
   }
 
   const currentRound = session.currentRound || { votes: {}, regressionFlags: {}, state: 'voting' };
   const hasVoted = Object.prototype.hasOwnProperty.call(currentRound.votes || {}, currentUser);
   const isRevealed = currentRound.state === 'revealed';
-  const devConsensus = isRevealed && checkDevConsensus(session.participants, currentRound.votes);
+  const hasConsensus = isRevealed && checkConsensus(session.participants, currentRound.votes);
 
   const handleVote = (value) => {
     const participant = session.participants.find((item) => item.name === currentUser);
@@ -159,6 +194,9 @@ export default function PointPokerSessionPage() {
       <div className="mx-auto max-w-7xl flex flex-col lg:flex-row gap-6">
         <main className="flex-1 space-y-6">
           <header className="bg-bg-surface rounded-lg border border-border p-5">
+            <p className="text-sm text-text-secondary mb-1">
+              Welcome, <span className="font-semibold text-text-primary">{currentUser}</span>
+            </p>
             <h1 className="text-3xl font-bold text-text-primary">{session.teamName}</h1>
             <p className="text-text-secondary mt-2">
               Round status:{' '}
@@ -166,17 +204,13 @@ export default function PointPokerSessionPage() {
             </p>
           </header>
 
-          {isPM && (
+          {canControl && (
             <PMControls
               estimationMode={session.estimationMode}
               onModeChange={setEstimationMode}
               currentValues={session.voteValues}
               onSetValues={handleSetValues}
               onReveal={() => revealVotes()}
-              onReset={() => {
-                resetVotes();
-                setSelectedVote(null);
-              }}
               onNextRound={() => {
                 nextRound();
                 setSelectedVote(null);
@@ -188,7 +222,7 @@ export default function PointPokerSessionPage() {
 
           {isPM && <ShareSession sessionUrl={buildShareableUrl(sessionId)} />}
 
-          {!isPM && (
+          {!isPM && !isObserver && (
             <section className="bg-bg-surface rounded-lg border border-border p-5 space-y-4">
               <h2 className="text-xl font-bold text-text-primary">Cast Your Vote</h2>
               <VoteCards
@@ -217,8 +251,11 @@ export default function PointPokerSessionPage() {
             participants={session.participants}
             votes={currentRound.votes}
             isRevealed={currentRound.state === 'revealed'}
+            canControl={canControl}
+            onKick={kickParticipant}
+            currentUser={currentUser}
           />
-          {devConsensus && (
+          {hasConsensus && (
             <div className="text-center space-y-3 bg-bg-surface rounded-lg border border-teal/40 p-4">
               <h3 className="text-xl font-bold text-teal">🎉 Consensus!</h3>
               <p className="text-text-secondary text-sm">{consensusGif.message}</p>
