@@ -24,8 +24,9 @@ const CONSENSUS_GIFS = [
   { src: '/gifs/celebrate-10.gif', message: 'Great minds think alike!' },
 ];
 
-function getRandomGif() {
-  return CONSENSUS_GIFS[Math.floor(Math.random() * CONSENSUS_GIFS.length)];
+function getConsensusGif(seed) {
+  const index = seed % CONSENSUS_GIFS.length;
+  return CONSENSUS_GIFS[index];
 }
 
 function checkConsensus(participants, votes) {
@@ -73,7 +74,7 @@ export default function PointPokerSessionPage() {
   const [selectedVote, setSelectedVote] = useState(null);
   const [showRegressionModal, setShowRegressionModal] = useState(false);
   const [pendingVote, setPendingVote] = useState(null);
-  const [consensusGif, setConsensusGif] = useState(() => getRandomGif());
+  const [consensusGif, setConsensusGif] = useState(null);
 
   useEffect(() => {
     if (currentUser && session?.teamName) {
@@ -83,9 +84,10 @@ export default function PointPokerSessionPage() {
 
   useEffect(() => {
     if (session?.currentRound?.state === 'revealed') {
-      setConsensusGif(getRandomGif());
+      const roundNumber = (session.roundHistory || []).length;
+      setConsensusGif(getConsensusGif(roundNumber));
     }
-  }, [session?.currentRound?.state]);
+  }, [session?.currentRound?.state, session?.roundHistory?.length]);
 
   useEffect(() => {
     if (session?.currentRound && currentUser) {
@@ -255,7 +257,7 @@ export default function PointPokerSessionPage() {
             onKick={kickParticipant}
             currentUser={currentUser}
           />
-          {hasConsensus && (
+          {hasConsensus && consensusGif && (
             <div className="text-center space-y-3 bg-bg-surface rounded-lg border border-teal/40 p-4">
               <h3 className="text-xl font-bold text-teal">🎉 Consensus!</h3>
               <p className="text-text-secondary text-sm">{consensusGif.message}</p>
