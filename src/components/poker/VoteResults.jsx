@@ -146,7 +146,29 @@ function RoleSection({ title, participants, votes, showRegression, regressionFla
   );
 }
 
-function VoteDistribution({ entries, totalVotes }) {
+function getDistribution(participants, votes) {
+  const voteCounts = participants.reduce((acc, participant) => {
+    const vote = getVoteLabel(participant.name, votes);
+    if (vote === null || vote === undefined) {
+      return acc;
+    }
+
+    const key = String(vote);
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
+  const entries = Object.entries(voteCounts).map(([value, count], index) => ({
+    value,
+    count,
+    color: CHART_COLORS[index % CHART_COLORS.length],
+  }));
+
+  const totalVotes = entries.reduce((sum, entry) => sum + entry.count, 0);
+  return { entries, totalVotes };
+}
+
+function VoteDistribution({ title, entries, totalVotes }) {
   const cx = 80;
   const cy = 80;
   const radius = 70;
@@ -154,8 +176,8 @@ function VoteDistribution({ entries, totalVotes }) {
   let currentAngle = 0;
 
   return (
-    <section className="bg-bg-surface rounded-lg p-4 md:col-span-2">
-      <h3 className="text-lg font-bold text-text-primary mb-3">Vote Distribution</h3>
+    <section className="bg-bg-surface rounded-lg p-4">
+      <h3 className="text-lg font-bold text-text-primary mb-3">{title}</h3>
 
       <div className="flex flex-col lg:flex-row lg:items-center gap-4">
         <div className="mx-auto lg:mx-0 shrink-0">
@@ -194,26 +216,8 @@ function VoteDistribution({ entries, totalVotes }) {
 export default function VoteResults({ participants = [], votes = {}, regressionFlags = {} }) {
   const qaParticipants = participants.filter((participant) => participant.role === 'QA');
   const devParticipants = participants.filter((participant) => participant.role === 'DEV');
-  const chartParticipants = [...qaParticipants, ...devParticipants];
-
-  const voteCounts = chartParticipants.reduce((acc, participant) => {
-    const vote = getVoteLabel(participant.name, votes);
-    if (vote === null || vote === undefined) {
-      return acc;
-    }
-
-    const key = String(vote);
-    acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {});
-
-  const distributionEntries = Object.entries(voteCounts).map(([value, count], index) => ({
-    value,
-    count,
-    color: CHART_COLORS[index % CHART_COLORS.length],
-  }));
-
-  const totalVotes = distributionEntries.reduce((sum, entry) => sum + entry.count, 0);
+  const devDistribution = getDistribution(devParticipants, votes);
+  const qaDistribution = getDistribution(qaParticipants, votes);
 
   return (
     <div className="space-y-4">
@@ -235,7 +239,23 @@ export default function VoteResults({ participants = [], votes = {}, regressionF
         />
       </div>
 
-      {totalVotes > 0 && <VoteDistribution entries={distributionEntries} totalVotes={totalVotes} />}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {qaDistribution.totalVotes > 0 && (
+          <VoteDistribution
+            title="QA Vote Distribution"
+            entries={qaDistribution.entries}
+            totalVotes={qaDistribution.totalVotes}
+          />
+        )}
+
+        {devDistribution.totalVotes > 0 && (
+          <VoteDistribution
+            title="DEV Vote Distribution"
+            entries={devDistribution.entries}
+            totalVotes={devDistribution.totalVotes}
+          />
+        )}
+      </div>
     </div>
   );
 }

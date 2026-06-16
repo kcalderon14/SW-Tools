@@ -12,16 +12,16 @@ import ParticipantsList from '../components/poker/ParticipantsList';
 import ShareSession from '../components/poker/ShareSession';
 
 const CONSENSUS_GIFS = [
-  { id: 'dSetNZo2AJfptAk9hp', message: 'Perfect sync!' },
-  { id: 'l0HlMSGQQmY0tiere', message: 'Teamwork makes the dream work!' },
-  { id: 'kyLYXonQYYfwYDIeZl', message: 'Nailed it!' },
-  { id: 'YRVUSmSTGFP848gJT0', message: 'Houston, we have consensus!' },
-  { id: 'l0MYGb1LuZ3n7dRnO', message: 'Everyone agrees!' },
-  { id: 'g9582DNuQppxC', message: 'High five, team!' },
-  { id: 'xT0xezQGU5xCDJuCPe', message: 'Celebration time!' },
-  { id: 'Is1O1TWV0LEJi', message: 'The team is on fire!' },
-  { id: '11sBLVxNs7v6WA', message: 'Flawless alignment!' },
-  { id: 'l0MYJnJQ4EiYLxvQ4', message: 'Great minds think alike!' },
+  { src: '/gifs/celebrate-1.gif', message: 'Perfect sync!' },
+  { src: '/gifs/celebrate-2.gif', message: 'Teamwork makes the dream work!' },
+  { src: '/gifs/celebrate-3.gif', message: 'Nailed it!' },
+  { src: '/gifs/celebrate-4.gif', message: 'Houston, we have consensus!' },
+  { src: '/gifs/celebrate-5.gif', message: 'Everyone agrees!' },
+  { src: '/gifs/celebrate-6.gif', message: 'High five, team!' },
+  { src: '/gifs/celebrate-7.gif', message: 'Celebration time!' },
+  { src: '/gifs/celebrate-8.gif', message: 'The team is on fire!' },
+  { src: '/gifs/celebrate-9.gif', message: 'Flawless alignment!' },
+  { src: '/gifs/celebrate-10.gif', message: 'Great minds think alike!' },
 ];
 
 function getRandomGif() {
@@ -259,15 +259,12 @@ export default function PointPokerSessionPage() {
             <div className="text-center space-y-3 bg-bg-surface rounded-lg border border-teal/40 p-4">
               <h3 className="text-xl font-bold text-teal">🎉 Consensus!</h3>
               <p className="text-text-secondary text-sm">{consensusGif.message}</p>
-              <div className="relative w-full" style={{ paddingBottom: '75%' }}>
-                <iframe
-                  src={`https://giphy.com/embed/${consensusGif.id}`}
-                  className="absolute top-0 left-0 w-full h-full rounded-lg"
-                  frameBorder="0"
-                  allowFullScreen
-                  title="Celebration GIF"
-                />
-              </div>
+              <img
+                src={consensusGif.src}
+                alt="Celebration GIF"
+                className="w-full rounded-lg"
+                loading="lazy"
+              />
             </div>
           )}
         </aside>
