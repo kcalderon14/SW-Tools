@@ -1,0 +1,28 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "poker-sessions": {
+      "$sessionId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "newData.hasChildren(['id', 'pm', 'createdAt', 'participants', 'currentRound']) && newData.child('id').isString() && newData.child('id').val().length <= 64 && newData.child('id').val() == $sessionId && newData.child('pm').isString() && newData.child('pm').val().length <= 100 && newData.child('createdAt').isString() && newData.child('createdAt').val().length <= 30 && (!newData.child('estimationMode').exists() || newData.child('estimationMode').isString())",
+        "currentRound": {
+          ".validate": "newData.hasChild('state') && newData.child('state').isString()"
+        },
+        "participants": {
+          "$idx": {
+            ".validate": "newData.hasChildren(['name', 'role']) && newData.child('name').isString() && newData.child('name').val().length <= 100 && newData.child('role').isString()"
+          }
+        },
+        "$other": {
+          ".validate": true
+        }
+      }
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

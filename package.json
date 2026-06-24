@@ -9,13 +9,14 @@
     "preview": "vite preview",
     "server": "node server/index.js",
     "start": "npm run build && node server/index.js",
+    "deploy:rules": "firebase deploy --only database",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
     "express": "^5.1.0",
     "firebase": "^12.14.0",
-    "firebase-admin": "^14.0.0",
+    "firebase-admin": "^13.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.1"
@@ -27,6 +28,7 @@
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^4.5.2",
+    "firebase-tools": "^15.22.1",
     "jsdom": "^25.0.1",
     "tailwindcss": "^4.1.7",
     "vite": "^6.3.5",

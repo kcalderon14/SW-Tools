@@ -79,3 +79,15 @@ server/
 | `npm run preview` | Preview production build locally |
 | `npm run server` | Start production server (requires build) |
 | `npm start` | Build and start production server |
+
+## Firebase Database Rules
+
+The Point Poker feature uses Firebase Realtime Database. Security rules are defined in `database.rules.json`.
+
+### Deploying Rules
+
+1. Install dependencies: `npm install`
+2. Log in to Firebase (one-time): `npx firebase login`
+3. Deploy rules: `npm run deploy:rules`
+
+This runs `firebase deploy --only database` targeting the `sw-tools-6c939` project.
